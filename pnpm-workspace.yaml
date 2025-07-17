@@ -1,8 +1,10 @@
 packages:
   - mf_provider_app
   - mf_lib
-  - mf_react_consumer
+  - mf_react_rsbuild
+  - mf_react_vite
 
 onlyBuiltDependencies:
+  - '@tailwindcss/oxide'
   - core-js
   - esbuild
