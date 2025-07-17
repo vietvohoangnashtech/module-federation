@@ -1,0 +1,8 @@
+packages:
+  - mf_provider_app
+  - mf_lib
+  - mf_react_consumer
+
+onlyBuiltDependencies:
+  - core-js
+  - esbuild

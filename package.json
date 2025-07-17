@@ -1,0 +1,21 @@
+{
+  "name": "mf-demo",
+  "private": true,
+  "version": "1.0.0",
+  "scripts": {
+    "dev": "concurrently --kill-others-on-fail 'pnpm:dev:lib' 'pnpm:dev:provider' 'pnpm:dev:consumer:wait'",
+    "storybook": "concurrently --kill-others-on-fail 'pnpm run dev:lib' 'wait-on http://localhost:5000/mf-manifest.json && pnpm --filter mf_lib storybook -p 6006'",
+    "dev:lib": "pnpm --filter mf_lib mf-dev",
+    "dev:provider": "wait-on http://localhost:5000/mf-manifest.json && pnpm --filter mf_provider_app dev",
+    "dev:consumer": "pnpm --filter mf_react_consumer dev",
+    "dev:consumer:wait": "wait-on http://localhost:3001/mf-manifest.json http://localhost:5000/mf-manifest.json && pnpm run dev:consumer",
+    "build:lib": "pnpm --filter mf_lib build",
+    "build:provider": "pnpm --filter mf_provider_app build",
+    "build:consumer": "pnpm --filter mf_react_consumer build",
+    "build:all": "pnpm run build:lib && pnpm run build:provider && pnpm run build:consumer"
+  },
+  "devDependencies": {
+    "concurrently": "^8.2.2",
+    "wait-on": "^7.2.0"
+  }
+}

@@ -1,0 +1,10 @@
+# Ignore node_modules in all directories
+node_modules/
+**/node_modules/
+# Ignore .github directory at the root
+.github/
+# Ignore dist folders in all directories
+dist/
+**/dist/
+# Ignore @mf-types folders in all directories
+**/@mf-types/
