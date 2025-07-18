@@ -14,7 +14,12 @@
     "build:rsbuild": "pnpm --filter mf_react_rsbuild build",
     "build:vite": "pnpm --filter mf_react_vite build",
     "build:webpack": "pnpm --filter mf_react_webpack build",
-    "test:webpack": "pnpm --filter mf_react_webpack test"
+    "test:webpack": "pnpm --filter mf_react_webpack test",
+    "lint:webpack": "pnpm --filter mf_react_webpack lint",
+    "typecheck:webpack": "pnpm --filter mf_react_webpack typecheck",
+    "test:vite": "pnpm --filter mf_react_vite test",
+    "lint:vite": "pnpm --filter mf_react_vite lint",
+    "typecheck:vite": "pnpm --filter mf_react_vite typecheck"
   },
   "devDependencies": {
     "concurrently": "^8.2.2",

@@ -51,11 +51,26 @@ This file provides a brief guide on how to use the scripts defined in your `pack
     ```bash
     pnpm test:webpack
     ```
+  - Vite:
+    ```bash
+    pnpm test:vite
+    ```
     <!--
   - All subdirectories:
     ```bash
     pnpm test
     ```
     -->
+
+## Lint and Typecheck (Vite)
+
+- **Lint Vite app**
+  ```bash
+  pnpm lint:vite
+  ```
+- **Typecheck Vite app**
+  ```bash
+  pnpm typecheck:vite
+  ```
 
 Refer to your `package.json` for the full list of

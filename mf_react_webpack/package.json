@@ -9,7 +9,7 @@
     "clean": "rimraf dist",
     "lint": "eslint src --ext .ts,.tsx --fix",
     "lint:check": "eslint src --ext .ts,.tsx",
-    "type-check": "tsc --noEmit",
+    "typecheck": "tsc --noEmit",
     "test": "jest",
     "test:coverage": "jest --coverage",
     "preview": "webpack serve --config webpack.config.cjs --mode production"
