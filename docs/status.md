@@ -14,22 +14,10 @@ Empty = Not implemented
 
 ---
 
-## Notes
-
-React webpack MF implementation cannot import directly from index.tsx export ( `mf_lib` as `lib/components` ). Have to direct expose a component and consume in webpack sample as a direct React.Lazy import , checkout `mf_react_webpack/src/App.tsx` for details
-
----
-
-## Solution
-
-Current solution is implemented with pnpm workspace monorepo . The goal is to create a polyrepo solution that can be used with any framework.
-
----
-
 ## To-Do List
 
 - ~~Webpack demo~~
-- ~~Testing~~
+- Testing ( ready for `mf_react_vite` , `mf_react_webpack` )
 - CI/CD
 - Deployment
 - Documentation
