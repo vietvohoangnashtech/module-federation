@@ -3,17 +3,18 @@
   "private": true,
   "version": "1.0.0",
   "scripts": {
-    "dev": "concurrently --kill-others-on-fail 'pnpm:dev:lib' 'pnpm:dev:provider' 'pnpm:dev:consumer-rsbuild'",
-    "dev:vite": "concurrently --kill-others-on-fail 'pnpm:dev:lib' 'pnpm:dev:consumer-vite'",
+    "dev:rsbuild": "concurrently --kill-others-on-fail 'pnpm:dev:lib' 'pnpm:dev:provider' 'wait-on http://localhost:3001/mf-manifest.json http://localhost:5000/mf-manifest.json && pnpm --filter mf_react_rsbuild dev'",
+    "dev:vite": "concurrently --kill-others-on-fail 'pnpm:dev:lib' 'wait-on http://localhost:5000/mf-manifest.json && pnpm --filter mf_react_vite dev'",
     "storybook": "concurrently --kill-others-on-fail 'pnpm run dev:lib' 'wait-on http://localhost:5000/mf-manifest.json && pnpm --filter mf_lib storybook -p 6006'",
+    "dev:webpack": "concurrently --kill-others-on-fail 'pnpm:dev:lib' 'wait-on http://localhost:5000/mf-manifest.json && pnpm --filter mf_react_webpack dev'",
     "dev:lib": "pnpm --filter mf_lib mf-dev",
     "dev:provider": "wait-on http://localhost:5000/mf-manifest.json && pnpm --filter mf_provider_app dev",
-    "dev:consumer-vite": "wait-on http://localhost:5000/mf-manifest.json && pnpm --filter mf_react_vite dev",
-    "dev:consumer-rsbuild": "wait-on http://localhost:3001/mf-manifest.json http://localhost:5000/mf-manifest.json && pnpm --filter mf_react_rsbuild dev",
     "build:lib": "pnpm --filter mf_lib build",
     "build:provider": "pnpm --filter mf_provider_app build",
-    "build:consumer": "pnpm --filter mf_react_rsbuild build",
-    "build:all": "pnpm run build:lib && pnpm run build:provider && pnpm run build:consumer"
+    "build:rsbuild": "pnpm --filter mf_react_rsbuild build",
+    "build:vite": "pnpm --filter mf_react_vite build",
+    "build:webpack": "pnpm --filter mf_react_webpack build",
+    "test:webpack": "pnpm --filter mf_react_webpack test"
   },
   "devDependencies": {
     "concurrently": "^8.2.2",

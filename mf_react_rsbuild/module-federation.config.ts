@@ -1,5 +1,4 @@
 import {createModuleFederationConfig} from '@module-federation/rsbuild-plugin';
-import deps from './package.json';
 export default createModuleFederationConfig({
   name: 'mf_react_rsbuild',
   remotes: {
@@ -8,11 +7,12 @@ export default createModuleFederationConfig({
   },
   shareStrategy: 'loaded-first',
   shared: {
-    react: {singleton: true},
-    'react-dom': {singleton: true},
+    react: {singleton: true, eager: true, requiredVersion: '^18.3.1'},
+    'react-dom': {singleton: true, eager: true, requiredVersion: '^18.3.1'},
     'react-router-dom': {
       singleton: true,
-      requiredVersion: deps['react-router-dom'],
+      eager: true,
+      requiredVersion: '^7.6.3',
     },
   },
 });

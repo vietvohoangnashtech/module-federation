@@ -3,7 +3,8 @@ const HtmlWebpackPlugin = require('html-webpack-plugin');
 const MiniCssExtractPlugin = require('mini-css-extract-plugin');
 const CssMinimizerPlugin = require('css-minimizer-webpack-plugin');
 const webpack = require('webpack');
-
+const {ModuleFederationPlugin} = require('@module-federation/enhanced/webpack');
+const mfConfig = require('./module-federation.config');
 module.exports = (env, argv) => {
   const isProduction = argv.mode === 'production';
 
@@ -46,6 +47,7 @@ module.exports = (env, argv) => {
       new HtmlWebpackPlugin({
         template: './public/index.html',
       }),
+      new ModuleFederationPlugin(mfConfig),
       new webpack.ProgressPlugin({
         activeModules: false,
         entries: true,

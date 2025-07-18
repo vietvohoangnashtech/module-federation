@@ -10,3 +10,5 @@ dist/
 **/@mf-types/
 # Ignore .__mf__temp folders in all directories
 **/.__mf__temp/
+# Ignore coverage folders in all subdirectories
+**/coverage/
