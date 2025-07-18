@@ -8,3 +8,5 @@ dist/
 **/dist/
 # Ignore @mf-types folders in all directories
 **/@mf-types/
+# Ignore .__mf__temp folders in all directories
+**/.__mf__temp/
