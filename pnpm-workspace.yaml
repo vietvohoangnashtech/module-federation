@@ -1,9 +1,10 @@
 packages:
-  - mf_provider_app
-  - mf_lib
-  - mf_react_rsbuild
-  - mf_react_vite
-  - mf_react_webpack
+  - mf_cart
+  - mf_checkout
+  - mf_products
+  - mf_shared_lib
+  - mf_shell
+  - mf_user
 
 onlyBuiltDependencies:
   - '@parcel/watcher'
