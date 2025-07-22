@@ -20,7 +20,8 @@
     "noUnusedParameters": true,
     "baseUrl": ".",
     "paths": {
-      "lib/*": ["./@mf-types/lib/*"]
+      "mf_user/*": ["./@mf-types/mf_user/*"],
+      "mf_shared_lib/*": ["./@mf-types/mf_shared_lib/*"]
     },
     "types": ["jest", "@testing-library/jest-dom"]
   },

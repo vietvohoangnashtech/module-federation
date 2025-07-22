@@ -106,35 +106,47 @@ The e-commerce platform will be composed of the following modules:
 
 ## 4. Data Flow and Inter-Module Communication
 
-To maintain decoupling, modules will not directly access each other's Redux stores. Instead, communication will be handled via two primary patterns:
+To maintain decoupling, modules will primarily communicate via routing and shared Redux store mechanisms.
 
 1.  **Routing (Top-Down):** The `mf_shell` controls which MFE is active based on the URL. It passes route parameters (like a product ID) as props to the mounted MFE.
-2.  **Browser Events (Bottom-Up):** When an action in one MFE needs to trigger a state change in another, it will dispatch a `CustomEvent`. Other MFEs will listen for these events. This is the primary method for cross-module interaction.
+2.  **Shared Redux Store (Centralized State Management):** For global state management, a single Redux store is provided by `mf_shared_lib`. Remote applications (`mf_user`, `mf_products`, `mf_cart`, `mf_checkout`) can expose their specific reducers and sagas via Module Federation. The `mf_shell` (host) is responsible for dynamically injecting these reducers into the shared store and running the corresponding sagas. This ensures a unified state tree across the application while allowing individual MFEs to manage their domain-specific logic.
 
-**Example Flow: Adding an item to the cart**
+**Example Flow: User Login**
 
-1.  **User Action:** The user is on the `ProductDetailPage` (rendered by `mf_products`) and clicks the "Add to Cart" button.
-2.  **Event Dispatch:** The `mf_products` module does **not** know about the cart's internal logic. It simply dispatches a browser event:
-    ```javascript
-    // Inside mf_products component
-    const product = { id: '123', name: 'Gaming Mouse', price: 59.99 };
-    const event = new CustomEvent('addToCart', { detail: { product } });
-    window.dispatchEvent(event);
-    ```
-3.  **Event Listening:** The `mf_cart` module, loaded in the background by the shell, listens for this specific event.
-    ```javascript
-    // Inside mf_cart logic
-    window.addEventListener('addToCart', (event) => {
-      const { product } = event.detail;
-      // Dispatch a Redux action to add the product to its own internal store.
-      dispatch(cartActions.addItem(product));
-    });
-    ```
-4.  **State Update:** The `mf_cart` Redux store is updated. The `MiniCart` component (displayed in the shell) re-renders automatically to show the new item count.
+1.  **User Action:** The user interacts with the `LoginPage` component (exposed by `mf_user` and rendered by `mf_shell`).
+2.  **Action Dispatch:** The `LoginPage` dispatches a Redux action (e.g., `loginRequest`) to the shared store.
+3.  **Saga Execution:** The `mf_user`'s `authSaga` (which was dynamically run by `mf_shell` at startup) intercepts the `loginRequest` action.
+4.  **API Call:** The `authSaga` makes an asynchronous call to the authentication API (e.g., Supabase).
+5.  **State Update:** Based on the API response, the `authSaga` dispatches `loginSuccess` or `loginFailure` actions.
+6.  **Reducer Update:** The `mf_user`'s `authReducer` (which was dynamically injected into the shared store by `mf_shell`) processes these actions and updates the relevant slice of the global Redux state.
+7.  **UI Re-render:** Components subscribed to the authentication state in the shared store (e.g., `AuthStatus` in `mf_shell`) re-render to reflect the new login status.
 
 ---
 
-## 5. CI/CD and Deployment Strategy
+## 5. Implementation Checklist
+
+This section tracks the progress of implementing the micro-frontend modules and their core functionalities.
+
+### Core Features
+
+*   [x] **Login Flow (`mf_user` & `mf_shell` integration)**: User authentication, Redux store integration, and saga execution.
+*   [ ] **Signup Flow (`mf_user` & `mf_shell` integration)**: User registration.
+*   [ ] **Product Listing (`mf_products` & `mf_shell` integration)**: Displaying products, search, and filtering.
+*   [ ] **Product Detail (`mf_products` & `mf_shell` integration)**: Displaying individual product details.
+*   [ ] **Add to Cart (`mf_cart` & `mf_products` integration)**: Adding items to the shopping cart.
+*   [ ] **Cart Page (`mf_cart` & `mf_shell` integration)**: Displaying and managing cart contents.
+*   [ ] **Checkout Flow (`mf_checkout` & `mf_shell` integration)**: Multi-step checkout process.
+*   [ ] **User Account Management (`mf_user` & `mf_shell` integration)**: Displaying user profile and order history.
+
+### Shared Components & Utilities
+
+*   [ ] **Shared UI Components (`mf_shared_lib`)**: Implement common UI components (e.g., Button, Input, Modal).
+*   [ ] **Shared Redux Setup (`mf_shared_lib`)**: Ensure robust shared Redux store and saga middleware setup.
+*   [ ] **API Client (`mf_shared_lib`)**: Centralized API client for consistent network requests.
+
+---
+
+## 6. CI/CD and Deployment Strategy
 
 The architecture is designed for independent deployments, which is a core strength of micro-frontends.
 
