@@ -1,7 +1,31 @@
-import React from 'react';
-import {FormCheck, FormCheckProps} from 'react-bootstrap';
-import '../theme/custom-bootstrap.scss';
+import {Checkbox as AriaCheckbox, CheckboxProps} from 'react-aria-components';
 
-export const Checkbox: React.FC<FormCheckProps> = (props) => (
-  <FormCheck type='checkbox' {...props} />
-);
+import './styles/Checkbox.scss';
+
+export function Checkbox({
+  children,
+  ...props
+}: Omit<CheckboxProps, 'children'> & {
+  children?: React.ReactNode;
+}) {
+  return (
+    <AriaCheckbox {...props}>
+      {({isIndeterminate}) => (
+        <>
+          <div className='checkbox'>
+            <svg viewBox='0 0 18 18' aria-hidden='true'>
+              {isIndeterminate ? (
+                <rect x={1} y={7.5} width={15} height={3} />
+              ) : (
+                <polyline points='1 9 7 14 15 4' />
+              )}
+            </svg>
+          </div>
+          {children}
+        </>
+      )}
+    </AriaCheckbox>
+  );
+}
+
+export {Checkbox as MyCheckbox};

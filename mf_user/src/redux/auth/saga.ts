@@ -1,7 +1,20 @@
 import {call, put, takeLatest, CallEffect, PutEffect} from 'redux-saga/effects';
 import {supabase} from '../../supabase';
-import * as actions from './actions';
-
+import {
+  loginRequest,
+  loginSuccess,
+  loginFailure,
+  signupRequest,
+  signupSuccess,
+  signupFailure,
+  fetchUserProfileRequest,
+  fetchUserProfileSuccess,
+  fetchUserProfileFailure,
+  logoutSuccess,
+  logout,
+  logoutFailure,
+} from './authSlice';
+import {requestNavigation} from 'mf_shared_lib/navigationSlice';
 interface LoginPayload {
   email: string;
   password: string;
@@ -28,19 +41,38 @@ function* loginSaga(
 ): Generator<CallEffect | PutEffect<any>, void, SupabaseResponse<any>> {
   try {
     const {email, password} = action.payload;
-    console.log(action, 'loginSaga', supabase.auth);
     const {data, error} = yield call([supabase.auth, 'signInWithPassword'], {
       email,
       password,
     });
 
     if (error) {
-      yield put(actions.loginFailure(error.message || String(error)));
+      yield put(loginFailure(error.message || String(error)));
     } else {
-      yield put(actions.loginSuccess(data));
+      yield put(loginSuccess({user: data.user, session: data.session}));
+      yield put(requestNavigation({path: '/profile', replace: false}));
     }
   } catch (error: any) {
-    yield put(actions.loginFailure(error?.message || String(error)));
+    yield put(loginFailure(error?.message || String(error)));
+  }
+}
+
+function* logoutSaga(): Generator<
+  CallEffect | PutEffect<any>,
+  void,
+  SupabaseResponse<any>
+> {
+  try {
+    const {error} = yield call([supabase.auth, 'signOut']);
+    console.log('logoutSaga error:', error);
+    if (error) {
+      yield put(logoutFailure(error.message || String(error)));
+    } else {
+      yield put(logoutSuccess());
+      yield put(requestNavigation({path: '/login', replace: true}));
+    }
+  } catch (error: any) {
+    yield put(logoutFailure(error?.message || String(error)));
   }
 }
 
@@ -58,16 +90,40 @@ function* signupSaga(
     });
 
     if (error) {
-      yield put(actions.signupFailure(error.message || String(error)));
+      yield put(signupFailure(error.message || String(error)));
     } else {
-      yield put(actions.signupSuccess(data));
+      yield put(
+        signupSuccess({user: data.user.user, session: data.user.session})
+      );
     }
   } catch (error: any) {
-    yield put(actions.signupFailure(error?.message || String(error)));
+    yield put(signupFailure(error?.message || String(error)));
+  }
+}
+
+function* fetchUserProfileSaga(
+  action: SagaAction<{id: string}>
+): Generator<CallEffect | PutEffect<any>, void, SupabaseResponse<any>> {
+  try {
+    console.log('fetchUserProfileSaga action:', action);
+    const id = action.payload || '';
+    const {data, error} = yield call([
+      supabase.from('profiles').select('*').eq('id', id),
+      'single',
+    ]);
+    if (error) {
+      yield put(fetchUserProfileFailure(error.message || String(error)));
+    } else {
+      yield put(fetchUserProfileSuccess(data));
+    }
+  } catch (error: any) {
+    yield put(fetchUserProfileFailure(error?.message || String(error)));
   }
 }
 
 export function* authSaga() {
-  yield takeLatest(actions.loginRequest.type, loginSaga);
-  yield takeLatest(actions.signupRequest.type, signupSaga);
+  yield takeLatest(loginRequest.type, loginSaga);
+  yield takeLatest(signupRequest.type, signupSaga);
+  yield takeLatest(fetchUserProfileRequest.type, fetchUserProfileSaga);
+  yield takeLatest(logout.type, logoutSaga);
 }

@@ -1,16 +1,28 @@
-import React from 'react';
 import {Breadcrumbs} from '../src/components/Breadcrumbs';
-import {Breadcrumb} from 'react-bootstrap';
+import {Breadcrumb, Link} from 'react-aria-components';
 
-export default {
-  title: 'Core/Breadcrumbs',
+import type {Meta} from '@storybook/react';
+
+const meta: Meta<typeof Breadcrumbs> = {
   component: Breadcrumbs,
+  parameters: {
+    layout: 'centered',
+  },
+  tags: ['autodocs'],
 };
 
-export const Basic = () => (
-  <Breadcrumbs>
-    <Breadcrumb.Item href='#'>Home</Breadcrumb.Item>
-    <Breadcrumb.Item href='#'>Library</Breadcrumb.Item>
-    <Breadcrumb.Item active>Data</Breadcrumb.Item>
+export default meta;
+
+export const Example = (args: any) => (
+  <Breadcrumbs {...args}>
+    <Breadcrumb>
+      <Link href='/'>Home</Link>
+    </Breadcrumb>
+    <Breadcrumb>
+      <Link href='/react-aria/'>React Aria</Link>
+    </Breadcrumb>
+    <Breadcrumb>
+      <Link>Breadcrumbs</Link>
+    </Breadcrumb>
   </Breadcrumbs>
 );

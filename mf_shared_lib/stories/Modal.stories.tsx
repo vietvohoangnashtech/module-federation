@@ -1,29 +1,44 @@
-import React, {useState} from 'react';
 import {Modal} from '../src/components/Modal';
-import {Button} from '../src/components/Button';
-import {Modal as RBModal} from 'react-bootstrap';
+import {
+  Button,
+  Dialog,
+  DialogTrigger,
+  Heading,
+  Input,
+  Label,
+  TextField,
+} from 'react-aria-components';
 
-export default {
-  title: 'Core/Modal',
+import type {Meta} from '@storybook/react';
+
+const meta: Meta<typeof Modal> = {
   component: Modal,
+  parameters: {
+    layout: 'centered',
+  },
+  tags: ['autodocs'],
 };
 
-export const Basic = () => {
-  const [show, setShow] = useState(false);
-  return (
-    <>
-      <Button onClick={() => setShow(true)}>Open Modal</Button>
-      <Modal show={show} onHide={() => setShow(false)}>
-        <RBModal.Header closeButton>
-          <RBModal.Title>Modal Title</RBModal.Title>
-        </RBModal.Header>
-        <RBModal.Body>Modal body content</RBModal.Body>
-        <RBModal.Footer>
-          <Button variant='secondary' onClick={() => setShow(false)}>
-            Close
-          </Button>
-        </RBModal.Footer>
-      </Modal>
-    </>
-  );
-};
+export default meta;
+
+export const Example = (args: any) => (
+  <DialogTrigger>
+    <Button>Sign up…</Button>
+    <Modal {...args}>
+      <Dialog>
+        <form>
+          <Heading slot='title'>Sign up</Heading>
+          <TextField autoFocus>
+            <Label>First Name:</Label>
+            <Input />
+          </TextField>
+          <TextField>
+            <Label>Last Name:</Label>
+            <Input />
+          </TextField>
+          <Button slot='close'>Submit</Button>
+        </form>
+      </Dialog>
+    </Modal>
+  </DialogTrigger>
+);

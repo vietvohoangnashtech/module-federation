@@ -1,12 +1,9 @@
-import React from 'react';
 import {
-  Breadcrumb,
-  BreadcrumbProps as RBBreadcrumbProps,
-} from 'react-bootstrap';
-import '../theme/custom-bootstrap.scss';
+  Breadcrumbs as RACBreadcrumbs,
+  BreadcrumbsProps,
+} from 'react-aria-components';
+import './styles/Breadcrumbs.scss';
 
-type BreadcrumbsProps = Omit<RBBreadcrumbProps, 'as'> & {as?: 'nav'};
-
-export const Breadcrumbs: React.FC<BreadcrumbsProps> = (props) => (
-  <Breadcrumb {...props} />
-);
+export function Breadcrumbs<T extends object>(props: BreadcrumbsProps<T>) {
+  return <RACBreadcrumbs {...props} />;
+}

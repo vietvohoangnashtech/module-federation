@@ -1,9 +1,17 @@
-import React from 'react';
 import {Checkbox} from '../src/components/Checkbox';
 
-export default {
-  title: 'Core/Checkbox',
+import type {Meta} from '@storybook/react';
+
+const meta: Meta<typeof Checkbox> = {
   component: Checkbox,
+  parameters: {
+    layout: 'centered',
+  },
+  tags: ['autodocs'],
 };
 
-export const Basic = () => <Checkbox label='Check me' />;
+export default meta;
+
+export const Example = (args: any) => (
+  <Checkbox {...args}>Unsubscribe</Checkbox>
+);

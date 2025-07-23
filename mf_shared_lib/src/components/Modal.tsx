@@ -1,5 +1,6 @@
-import React from 'react';
-import {Modal as RBModal, ModalProps as RBModalProps} from 'react-bootstrap';
-import '../theme/custom-bootstrap.scss';
+import {Modal as RACModal, ModalOverlayProps} from 'react-aria-components';
+import './styles/Modal.scss';
 
-export const Modal: React.FC<RBModalProps> = (props) => <RBModal {...props} />;
+export function Modal(props: ModalOverlayProps) {
+  return <RACModal {...props} />;
+}

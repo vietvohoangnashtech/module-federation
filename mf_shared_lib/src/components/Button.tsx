@@ -1,12 +1,6 @@
-import React from 'react';
-import {
-  Button as RBButton,
-  ButtonProps as RBButtonProps,
-} from 'react-bootstrap';
-import '../theme/custom-bootstrap.scss';
+import {Button as RACButton, ButtonProps} from 'react-aria-components';
+import './styles/Button.scss';
 
-type ButtonProps = Omit<RBButtonProps, 'as'> & {as?: 'button'};
-
-export const Button: React.FC<ButtonProps> = (props) => {
-  return <RBButton {...props} />;
-};
+export function Button(props: ButtonProps) {
+  return <RACButton {...props} />;
+}

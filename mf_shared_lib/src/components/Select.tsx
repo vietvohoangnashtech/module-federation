@@ -1,7 +1,53 @@
-import React from 'react';
-import {FormSelect, FormSelectProps} from 'react-bootstrap';
-import '../theme/custom-bootstrap.scss';
+import {
+  Button,
+  FieldError,
+  Label,
+  ListBox,
+  ListBoxItem,
+  ListBoxItemProps,
+  Popover,
+  Select as AriaSelect,
+  SelectProps as AriaSelectProps,
+  SelectValue,
+  Text,
+  ValidationResult,
+} from 'react-aria-components';
 
-export const Select: React.FC<FormSelectProps> = (props) => (
-  <FormSelect {...props} />
-);
+import './styles/Select.scss';
+
+export interface SelectProps<T extends object>
+  extends Omit<AriaSelectProps<T>, 'children'> {
+  label?: string;
+  description?: string;
+  errorMessage?: string | ((validation: ValidationResult) => string);
+  items?: Iterable<T>;
+  children: React.ReactNode | ((item: T) => React.ReactNode);
+}
+
+export function Select<T extends object>({
+  label,
+  description,
+  errorMessage,
+  children,
+  items,
+  ...props
+}: SelectProps<T>) {
+  return (
+    <AriaSelect {...props}>
+      <Label>{label}</Label>
+      <Button>
+        <SelectValue />
+        <span aria-hidden='true'>▼</span>
+      </Button>
+      {description && <Text slot='description'>{description}</Text>}
+      <FieldError>{errorMessage}</FieldError>
+      <Popover>
+        <ListBox items={items}>{children}</ListBox>
+      </Popover>
+    </AriaSelect>
+  );
+}
+
+export function SelectItem(props: ListBoxItemProps) {
+  return <ListBoxItem {...props} />;
+}

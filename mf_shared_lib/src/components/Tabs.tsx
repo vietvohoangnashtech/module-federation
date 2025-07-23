@@ -1,5 +1,6 @@
-import React from 'react';
-import {Tabs as RBTabs, TabsProps as RBTabsProps} from 'react-bootstrap';
-import '../theme/custom-bootstrap.scss';
+import {Tabs as RACTabs, TabsProps} from 'react-aria-components';
+import './styles/Tabs.scss';
 
-export const Tabs: React.FC<RBTabsProps> = (props) => <RBTabs {...props} />;
+export function Tabs(props: TabsProps) {
+  return <RACTabs {...props} />;
+}

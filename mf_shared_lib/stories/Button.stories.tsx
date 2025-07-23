@@ -1,10 +1,19 @@
-import React from 'react';
 import {Button} from '../src/components/Button';
 
-export default {
-  title: 'Core/Button',
+import type {Meta} from '@storybook/react';
+
+const meta: Meta<typeof Button> = {
   component: Button,
+  parameters: {
+    layout: 'centered',
+  },
+  tags: ['autodocs'],
 };
 
-export const Primary = () => <Button variant='primary'>Primary</Button>;
-export const Secondary = () => <Button variant='secondary'>Secondary</Button>;
+export default meta;
+
+export const Example = (args: any) => <Button {...args}>Press me</Button>;
+
+Example.args = {
+  onPress: () => alert('Hello world!'),
+};
