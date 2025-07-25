@@ -14,12 +14,10 @@ export default createModuleFederationConfig({
     react: {
       singleton: true,
       eager: true,
-      requiredVersion: '^18.3.1',
     },
     'react-dom': {
       singleton: true,
       eager: true,
-      requiredVersion: '^18.3.1',
     },
     '@reduxjs/toolkit': {
       singleton: true,

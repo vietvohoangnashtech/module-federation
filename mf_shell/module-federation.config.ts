@@ -10,7 +10,19 @@ export default createModuleFederationConfig({
     mf_shared_lib: 'mf_shared_lib@http://localhost:5000/mf-manifest.json',
   },
   shared: {
-    react: {singleton: true},
-    'react-dom': {singleton: true},
+    react: {singleton: true, eager: true},
+    'react-dom': {singleton: true, eager: true},
+    '@reduxjs/toolkit': {
+      singleton: true,
+      eager: true,
+    },
+    'react-redux': {
+      singleton: true,
+      eager: true,
+    },
+    'redux-saga': {
+      singleton: true,
+      eager: true,
+    },
   },
 });

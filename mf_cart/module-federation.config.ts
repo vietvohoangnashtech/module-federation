@@ -11,5 +11,17 @@ export default createModuleFederationConfig({
   shared: {
     react: {singleton: true, eager: true},
     'react-dom': {singleton: true, eager: true},
+    '@reduxjs/toolkit': {
+      singleton: true,
+      eager: true,
+    },
+    'react-redux': {
+      singleton: true,
+      eager: true,
+    },
+    'redux-saga': {
+      singleton: true,
+      eager: true,
+    },
   },
 });
