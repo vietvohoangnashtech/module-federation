@@ -4,7 +4,7 @@ import {Button, TextField} from 'mf_shared_lib/components';
 import {requestNavigation} from 'mf_shared_lib/navigationSlice';
 import {signupRequest} from '../redux/auth/authSlice';
 
-const Signup = () => {
+export const Signup = () => {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [firstName, setFirstName] = useState('');
@@ -71,7 +71,7 @@ const Signup = () => {
         <Button
           type='button'
           onClick={() =>
-            dispatch(requestNavigation({path: '/login', replace: false}))
+            dispatch(requestNavigation({path: '/', replace: false}))
           }
         >
           Back
@@ -80,5 +80,3 @@ const Signup = () => {
     </div>
   );
 };
-
-export default Signup;

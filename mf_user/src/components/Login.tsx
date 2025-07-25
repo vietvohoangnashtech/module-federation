@@ -4,7 +4,7 @@ import {Button, TextField} from 'mf_shared_lib/components';
 import {loginRequest} from '../redux/auth/authSlice';
 import {requestNavigation} from 'mf_shared_lib/navigationSlice';
 
-const Login = () => {
+export const Login = () => {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const dispatch = useAppDispatch();
@@ -19,7 +19,7 @@ const Login = () => {
   };
 
   return (
-    <div className='m-4 p-4'>
+    <div>
       <h3>Login</h3>
       <form onSubmit={handleSubmit}>
         <TextField
@@ -44,5 +44,3 @@ const Login = () => {
     </div>
   );
 };
-
-export default Login;

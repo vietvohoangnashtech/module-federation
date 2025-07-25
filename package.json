@@ -3,8 +3,7 @@
   "private": true,
   "version": "1.0.0",
   "scripts": {
-    "dev": "concurrently --kill-others-on-fail -c 'auto' -n 'shared,user,shell' 'pnpm --filter mf_shared_lib mf-dev' 'wait-on http://localhost:5000/mf-manifest.json && pnpm --filter mf_user dev' 'wait-on http://localhost:3005/mf-manifest.json && pnpm --filter mf_shell dev'",
-    "dev:shared": "pnpm --filter mf_shared_lib dev",
+    "dev": "concurrently --kill-others-on-fail -c 'auto' -n 'shared,user,cart,products,shell' 'pnpm --filter mf_shared_lib mf-dev' 'wait-on http://localhost:5000/mf-manifest.json && pnpm --filter mf_user dev' 'wait-on http://localhost:3005/mf-manifest.json && pnpm --filter mf_cart dev' 'wait-on http://localhost:3002/mf-manifest.json && pnpm --filter mf_products dev' 'wait-on http://localhost:3004/mf-manifest.json && pnpm --filter mf_shell dev'",
     "build:all": "pnpm build:shared && pnpm build:shell && pnpm build:products && pnpm build:cart && pnpm build:user && pnpm build:checkout",
     "build:shell": "pnpm --filter mf_shell build",
     "build:products": "pnpm --filter mf_products build",

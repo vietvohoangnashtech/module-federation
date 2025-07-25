@@ -43,6 +43,9 @@ export default defineConfig({
         distPath: {
           root: './dist/mf',
         },
+        css: {
+          enable: false,
+        },
       },
     },
   ],

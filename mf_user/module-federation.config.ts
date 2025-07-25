@@ -3,11 +3,9 @@ import {createModuleFederationConfig} from '@module-federation/rsbuild-plugin';
 export default createModuleFederationConfig({
   name: 'mf_user',
   exposes: {
-    './Login': './src/components/Login.tsx',
-    './Signup': './src/components/Signup.tsx',
+    './components': './src/components/index.ts',
     './authSlice': './src/redux/auth/authSlice.ts',
     './authSaga': './src/redux/auth/saga.ts',
-    './UserProfile': './src/components/UserProfile.tsx',
   },
   remotes: {
     mf_shared_lib: 'mf_shared_lib@http://localhost:5000/mf-manifest.json',

@@ -1,4 +1,4 @@
-import './App.css';
+import './App.scss';
 import {BrowserRouter} from 'react-router-dom';
 import {Provider} from 'react-redux';
 import {store, createRootReducer} from 'mf_shared_lib/redux';

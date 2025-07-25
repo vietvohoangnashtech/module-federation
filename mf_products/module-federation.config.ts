@@ -3,7 +3,7 @@ import {createModuleFederationConfig} from '@module-federation/rsbuild-plugin';
 export default createModuleFederationConfig({
   name: 'mf_products',
   exposes: {
-    '.': './src/bootstrap.tsx',
+    './components': './src/components/index.ts',
   },
   remotes: {
     mf_shared_lib: 'mf_shared_lib@http://localhost:5000/mf-manifest.json',

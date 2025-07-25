@@ -21,7 +21,9 @@
     "baseUrl": ".",
     "paths": {
       "mf_user/*": ["./@mf-types/mf_user/*"],
-      "mf_shared_lib/*": ["./@mf-types/mf_shared_lib/*"]
+      "mf_shared_lib/*": ["./@mf-types/mf_shared_lib/*"],
+      "mf_products/*": ["./@mf-types/mf_products/*"],
+      "mf_cart/*": ["./@mf-types/mf_cart/*"]
     },
     "types": ["jest", "@testing-library/jest-dom"]
   },

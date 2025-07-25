@@ -1,5 +1,3 @@
-const deps = require('./package.json').dependencies;
-
 module.exports = {
   name: 'mf_checkout',
   manifest: true,

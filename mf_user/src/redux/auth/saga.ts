@@ -50,7 +50,7 @@ function* loginSaga(
       yield put(loginFailure(error.message || String(error)));
     } else {
       yield put(loginSuccess({user: data.user, session: data.session}));
-      yield put(requestNavigation({path: '/profile', replace: false}));
+      yield put(requestNavigation({path: '/', replace: false}));
     }
   } catch (error: any) {
     yield put(loginFailure(error?.message || String(error)));
@@ -69,7 +69,7 @@ function* logoutSaga(): Generator<
       yield put(logoutFailure(error.message || String(error)));
     } else {
       yield put(logoutSuccess());
-      yield put(requestNavigation({path: '/login', replace: true}));
+      yield put(requestNavigation({path: '/', replace: true}));
     }
   } catch (error: any) {
     yield put(logoutFailure(error?.message || String(error)));

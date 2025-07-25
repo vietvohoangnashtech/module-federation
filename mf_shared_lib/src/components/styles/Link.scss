@@ -1,18 +1,13 @@
 @import './theme.scss';
 
 .react-aria-Link {
-  color: var(--link-color);
   font-size: 18px;
   transition: all 200ms;
-  text-decoration: underline;
   cursor: pointer;
   outline: none;
   position: relative;
-
-  &[data-hovered] {
-    text-decoration-style: wavy;
-  }
-
+  text-decoration: none;
+  color: var(--text-color);
   &[data-pressed] {
     color: var(--link-color-pressed);
   }

@@ -1,9 +1,8 @@
 import React, {useEffect} from 'react';
 import {useAppDispatch, useAppSelector} from 'mf_shared_lib/redux';
-import {fetchUserProfileRequest, logout} from '../redux/auth/authSlice';
+import {fetchUserProfileRequest} from '../redux/auth/authSlice';
 import type {ExtendedRootState} from '../redux/types';
-import {Button} from 'mf_shared_lib/components';
-const UserProfile: React.FC = () => {
+export const UserProfile: React.FC = () => {
   const dispatch = useAppDispatch();
   const user = useAppSelector((state: ExtendedRootState) => state.auth?.user);
   if (!user) {
@@ -31,9 +30,6 @@ const UserProfile: React.FC = () => {
     <div>
       <h2>User Profile</h2>
       <pre>{JSON.stringify(profile, null, 2)}</pre>
-      <Button onClick={() => dispatch(logout())}>Logout</Button>
     </div>
   );
 };
-
-export default UserProfile;

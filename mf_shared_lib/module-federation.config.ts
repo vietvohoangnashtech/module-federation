@@ -7,6 +7,8 @@ export default createModuleFederationConfig({
     './redux': './src/redux/index.ts',
     './navigationSlice': './src/redux/navigation/navigationSlice.ts',
     './components': './src/components/index.ts',
+    './theme/tokens': './src/theme/tokens.ts',
+    './icons': './src/icons/index.ts',
   },
   shared: {
     react: {

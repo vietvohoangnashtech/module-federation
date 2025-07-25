@@ -44,3 +44,5 @@ export * from './ToggleButtonGroup';
 export * from './Toolbar';
 export * from './Tooltip';
 export * from './Tree';
+export * from './NavigationBar';
+export * from './DialogTrigger';
