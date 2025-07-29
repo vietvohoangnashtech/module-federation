@@ -8,16 +8,27 @@ import {
   Popover,
 } from 'mf_shared_lib/components';
 import {requestNavigation} from 'mf_shared_lib/navigationSlice';
-import {useAppDispatch, useAppSelector} from 'mf_shared_lib/redux';
+import {
+  useAppDispatch,
+  useSafeSliceSelector,
+  useSliceAvailable,
+} from 'mf_shared_lib/redux';
 import './Navigation.scss';
-import {ExtendedRootState} from 'src/redux/types';
+import '../redux/store-types'; // Import type augmentations
+import type {AuthState} from '../redux/store-types';
 import {logout} from 'mf_user/authSlice';
 import {Login} from 'mf_user/components';
 import {ShoppingCart} from 'mf_shared_lib/icons';
 import {CartPreview} from 'mf_cart/components';
 export const Navigation = () => {
   const dispatch = useAppDispatch();
-  const user = useAppSelector((state: ExtendedRootState) => state.auth?.user);
+  const isAuthLoaded = useSliceAvailable('auth');
+  const user = useSafeSliceSelector(
+    'auth',
+    (auth: AuthState) => auth.user,
+    null
+  );
+
   const navigate = (path?: string) => {
     dispatch(requestNavigation({path: path || '/', replace: false}));
   };
@@ -28,6 +39,7 @@ export const Navigation = () => {
           <h3>MF SHOP</h3>
         </Link>
         <div>
+          <span className='nav-item'>{user?.name}</span>
           <span className='nav-item'>
             <DialogTrigger>
               <Link>
@@ -39,7 +51,9 @@ export const Navigation = () => {
             </DialogTrigger>
           </span>
           <span className='nav-item'>
-            {user ? (
+            {!isAuthLoaded ? (
+              <span>Loading...</span>
+            ) : user ? (
               <Link onClick={() => dispatch(logout())}>Logout</Link>
             ) : (
               <DialogTrigger>

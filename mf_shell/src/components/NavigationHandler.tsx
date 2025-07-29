@@ -1,11 +1,14 @@
 import {useNavigate} from 'react-router-dom';
-import {useAppDispatch, useAppSelector} from 'mf_shared_lib/redux';
+import {useAppDispatch, useEnhancedSelector} from 'mf_shared_lib/redux';
 import {useEffect} from 'react';
 import {clearNavigation} from 'mf_shared_lib/navigationSlice';
+
 const NavigationHandler = () => {
   const navigate = useNavigate();
   const dispatch = useAppDispatch();
-  const pendingNavigation = useAppSelector(
+
+  // Use enhanced selector for navigation (always available)
+  const pendingNavigation = useEnhancedSelector(
     (state) => state.navigationReducer.pendingNavigation
   );
 

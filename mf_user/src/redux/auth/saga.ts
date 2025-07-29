@@ -1,5 +1,4 @@
-import {call, put, takeLatest, CallEffect, PutEffect} from 'redux-saga/effects';
-import {supabase} from '../../supabase';
+import {put, takeLatest, delay} from 'redux-saga/effects';
 import {
   loginRequest,
   loginSuccess,
@@ -31,46 +30,42 @@ interface SagaAction<T> {
   payload: T;
 }
 
-interface SupabaseResponse<T> {
-  data: T;
-  error: any;
-}
-
 function* loginSaga(
   action: SagaAction<LoginPayload>
-): Generator<CallEffect | PutEffect<any>, void, SupabaseResponse<any>> {
+): Generator<any, void, any> {
   try {
     const {email, password} = action.payload;
-    const {data, error} = yield call([supabase.auth, 'signInWithPassword'], {
-      email,
-      password,
-    });
 
-    if (error) {
-      yield put(loginFailure(error.message || String(error)));
-    } else {
-      yield put(loginSuccess({user: data.user, session: data.session}));
+    yield delay(1000);
+
+    if (email && password) {
+      const mockUser = {
+        id: '12345',
+        email: email,
+        name: email.split('@')[0],
+      };
+
+      const mockSession = {
+        access_token: 'mock-token',
+        user: mockUser,
+      };
+
+      yield put(loginSuccess({user: mockUser, session: mockSession}));
       yield put(requestNavigation({path: '/', replace: false}));
+    } else {
+      yield put(loginFailure('Email and password are required'));
     }
   } catch (error: any) {
     yield put(loginFailure(error?.message || String(error)));
   }
 }
 
-function* logoutSaga(): Generator<
-  CallEffect | PutEffect<any>,
-  void,
-  SupabaseResponse<any>
-> {
+function* logoutSaga(): Generator<any, void, any> {
   try {
-    const {error} = yield call([supabase.auth, 'signOut']);
-    console.log('logoutSaga error:', error);
-    if (error) {
-      yield put(logoutFailure(error.message || String(error)));
-    } else {
-      yield put(logoutSuccess());
-      yield put(requestNavigation({path: '/', replace: true}));
-    }
+    yield delay(500);
+
+    yield put(logoutSuccess());
+    yield put(requestNavigation({path: '/', replace: true}));
   } catch (error: any) {
     yield put(logoutFailure(error?.message || String(error)));
   }
@@ -78,23 +73,30 @@ function* logoutSaga(): Generator<
 
 function* signupSaga(
   action: SagaAction<SignupPayload>
-): Generator<CallEffect | PutEffect<any>, void, SupabaseResponse<any>> {
+): Generator<any, void, any> {
   try {
     const {email, password, ...rest} = action.payload;
-    const {data, error} = yield call([supabase.auth, 'signUp'], {
-      email,
-      password,
-      options: {
-        data: rest,
-      },
-    });
 
-    if (error) {
-      yield put(signupFailure(error.message || String(error)));
+    // Simulate API delay
+    yield delay(1000);
+
+    // Simple validation
+    if (email && password) {
+      // Create a simple mock user object for demo
+      const mockUser = {
+        id: '67890',
+        email: email,
+        name: rest.name || email.split('@')[0], // Use provided name or email prefix
+      };
+
+      const mockSession = {
+        access_token: 'mock-token',
+        user: mockUser,
+      };
+
+      yield put(signupSuccess({user: mockUser, session: mockSession}));
     } else {
-      yield put(
-        signupSuccess({user: data.user.user, session: data.user.session})
-      );
+      yield put(signupFailure('Email and password are required'));
     }
   } catch (error: any) {
     yield put(signupFailure(error?.message || String(error)));
@@ -103,19 +105,23 @@ function* signupSaga(
 
 function* fetchUserProfileSaga(
   action: SagaAction<{id: string}>
-): Generator<CallEffect | PutEffect<any>, void, SupabaseResponse<any>> {
+): Generator<any, void, any> {
   try {
     console.log('fetchUserProfileSaga action:', action);
     const id = action.payload || '';
-    const {data, error} = yield call([
-      supabase.from('profiles').select('*').eq('id', id),
-      'single',
-    ]);
-    if (error) {
-      yield put(fetchUserProfileFailure(error.message || String(error)));
-    } else {
-      yield put(fetchUserProfileSuccess(data));
-    }
+
+    // Simulate API delay
+    yield delay(800);
+
+    // Return mock profile data
+    const mockProfile = {
+      id: id,
+      email: `user-${id}@example.com`,
+      name: `User ${id}`,
+      created_at: new Date().toISOString(),
+    };
+
+    yield put(fetchUserProfileSuccess(mockProfile));
   } catch (error: any) {
     yield put(fetchUserProfileFailure(error?.message || String(error)));
   }

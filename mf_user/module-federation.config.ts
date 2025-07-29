@@ -5,7 +5,8 @@ export default createModuleFederationConfig({
   exposes: {
     './components': './src/components/index.ts',
     './authSlice': './src/redux/auth/authSlice.ts',
-    './authSaga': './src/redux/auth/saga.ts',
+    './bootstrap': './src/bootstrap.ts',
+    './types': './src/redux/auth/types.ts',
   },
   remotes: {
     mf_shared_lib: 'mf_shared_lib@http://localhost:5000/mf-manifest.json',

@@ -1,5 +1,5 @@
 import {createSlice, PayloadAction} from '@reduxjs/toolkit';
-import type {AuthState, SupabaseUser, SupabaseSession} from './types';
+import type {AuthState, SimpleUser, SimpleSession} from './types';
 
 const initialState: AuthState = {
   isAuthenticated: false,
@@ -23,7 +23,7 @@ const authSlice = createSlice({
     },
     loginSuccess(
       state,
-      action: PayloadAction<{user: SupabaseUser; session: SupabaseSession}>
+      action: PayloadAction<{user: SimpleUser; session: SimpleSession}>
     ) {
       state.isAuthenticated = true;
       state.user = action.payload.user;
@@ -43,7 +43,7 @@ const authSlice = createSlice({
     },
     signupSuccess(
       state,
-      action: PayloadAction<{user: SupabaseUser; session: SupabaseSession}>
+      action: PayloadAction<{user: SimpleUser; session: SimpleSession}>
     ) {
       state.isAuthenticated = true;
       state.user = action.payload.user;
