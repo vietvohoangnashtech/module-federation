@@ -2,11 +2,11 @@ import React from 'react';
 import ReactDOM from 'react-dom/client';
 import App from './App';
 import {applyTheme} from './theme/applyTheme';
-import { initializeUserFeature } from 'mf_user/bootstrap';
+import {initializeUserFeature} from 'mf_user/bootstrap';
+import {initializeCartFeature} from 'mf_cart/bootstrap';
 
-// Initialize the user feature before the application renders.
-// This ensures the auth slice and saga are ready.
 initializeUserFeature();
+initializeCartFeature();
 
 applyTheme();
 

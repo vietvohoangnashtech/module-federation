@@ -15,8 +15,7 @@
     "noUnusedLocals": true,
     "noUnusedParameters": true,
     "paths": {
-      "*": ["./@mf-types/*"],
-      "mf_user/*": ["../mf_user/src/*"]
+      "*": ["./@mf-types/*"]
     }
   },
   "include": ["src"]

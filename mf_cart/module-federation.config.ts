@@ -4,6 +4,7 @@ export default createModuleFederationConfig({
   name: 'mf_cart',
   exposes: {
     './components': './src/components/index.ts',
+    './bootstrap': './src/bootstrap.ts',
   },
   remotes: {
     mf_shared_lib: 'mf_shared_lib@http://localhost:5000/mf-manifest.json',

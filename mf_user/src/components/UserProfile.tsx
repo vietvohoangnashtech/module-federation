@@ -1,7 +1,7 @@
 import React, {useEffect} from 'react';
 import {useAppDispatch, useAppSelector} from 'mf_shared_lib/redux';
 import {fetchUserProfileRequest} from '../redux/auth/authSlice';
-import type {ExtendedRootState} from '../redux/types';
+import type {ExtendedRootState} from '../redux/store-types';
 export const UserProfile: React.FC = () => {
   const dispatch = useAppDispatch();
   const user = useAppSelector((state: ExtendedRootState) => state.auth?.user);

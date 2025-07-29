@@ -6,7 +6,6 @@ const FEATURE_KEY = 'auth';
 let isInitialized = false;
 
 export const initializeUserFeature = () => {
-  // This idempotency check ensures the logic runs only once.
   if (isInitialized) {
     return;
   }

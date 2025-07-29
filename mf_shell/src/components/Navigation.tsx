@@ -60,7 +60,8 @@ export const Navigation = () => {
                 <Link>Login</Link>
                 <Modal isDismissable>
                   <Dialog>
-                    <div className='d-flex justify-content-end mb-2'>
+                    <div className='d-flex justify-content-between mb-2'>
+                      <h3>Login</h3>
                       <Button slot='close'>
                         <small>X</small>
                       </Button>
