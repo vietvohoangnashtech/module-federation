@@ -1,12 +1,4 @@
-export interface Product {
-  id: string;
-  name: string;
-  price: number;
-  description?: string;
-  imageUrl?: string;
-  category?: string;
-}
-
+import {Product} from 'mf_products/redux/product/types';
 export interface CartItem {
   product: Product;
   amount: number;
@@ -18,6 +10,7 @@ export interface CartState {
   itemCount: number;
   loading: boolean;
   error: string | null;
+  success: boolean;
 }
 
 export interface AddToCartPayload {

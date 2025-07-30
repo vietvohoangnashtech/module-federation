@@ -1,0 +1,29 @@
+[
+  {
+    "id": "1",
+    "name": "Wireless Mouse",
+    "price": 25.99,
+    "description": "A comfortable wireless mouse with ergonomic design.",
+    "imageUrl": "/images/mouse.jpg",
+    "category": "Electronics",
+    "stock": 120
+  },
+  {
+    "id": "2",
+    "name": "Mechanical Keyboard",
+    "price": 89.99,
+    "description": "RGB backlit mechanical keyboard with blue switches.",
+    "imageUrl": "/images/keyboard.jpg",
+    "category": "Electronics",
+    "stock": 80
+  },
+  {
+    "id": "3",
+    "name": "Noise Cancelling Headphones",
+    "price": 199.99,
+    "description": "Over-ear headphones with active noise cancellation.",
+    "imageUrl": "/images/headphones.jpg",
+    "category": "Audio",
+    "stock": 45
+  }
+]

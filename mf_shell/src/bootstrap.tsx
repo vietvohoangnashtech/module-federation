@@ -4,9 +4,11 @@ import App from './App';
 import {applyTheme} from './theme/applyTheme';
 import {initializeUserFeature} from 'mf_user/bootstrap';
 import {initializeCartFeature} from 'mf_cart/bootstrap';
+import {initializeProductFeature} from 'mf_products/bootstrap';
 
 initializeUserFeature();
 initializeCartFeature();
+initializeProductFeature();
 
 applyTheme();
 

@@ -22,49 +22,66 @@ const initialState: CartState = {
   itemCount: 0,
   loading: false,
   error: null,
+  success: false,
 };
 
 const cartSlice = createSlice({
   name: 'cart',
   initialState,
   reducers: {
-    addToCart: (state, action: PayloadAction<AddToCartPayload>) => {
+    addToCartRequest(state, action: PayloadAction<AddToCartPayload>) {
+      state.loading = true;
       const {product, amount = 1} = action.payload;
-
       const existingItemIndex = state.items.findIndex(
         (item) => item.product.id === product.id
       );
-
       if (existingItemIndex >= 0) {
         state.items[existingItemIndex].amount += amount;
       } else {
-        state.items.push({
-          product,
-          amount,
-        });
+        state.items.push({product, amount});
       }
-
       const {total, itemCount} = calculateCartTotals(state.items);
       state.total = total;
       state.itemCount = itemCount;
+      state.loading = false;
       state.error = null;
+      state.success = true;
     },
 
-    removeFromCart: (state, action: PayloadAction<RemoveFromCartPayload>) => {
+    removeFromCartRequest(
+      state,
+      _action: PayloadAction<RemoveFromCartPayload>
+    ) {
+      state.loading = true;
+      state.error = null;
+      state.success = false;
+    },
+    removeFromCartSuccess(state, action: PayloadAction<RemoveFromCartPayload>) {
       const {productId} = action.payload;
-
       state.items = state.items.filter((item) => item.product.id !== productId);
-
-      // Recalculate totals
       const {total, itemCount} = calculateCartTotals(state.items);
       state.total = total;
       state.itemCount = itemCount;
+      state.loading = false;
       state.error = null;
+      state.success = true;
+    },
+    removeFromCartFailure(state, action: PayloadAction<string>) {
+      state.loading = false;
+      state.error = action.payload;
+      state.success = false;
     },
 
-    updateCartItem: (state, action: PayloadAction<UpdateCartItemPayload>) => {
+    updateCartItemRequest(
+      state,
+      _action: PayloadAction<UpdateCartItemPayload>
+    ) {
+      state.loading = true;
+      state.error = null;
+      state.success = false;
+    },
+    updateCartItemSuccess(state, action: PayloadAction<UpdateCartItemPayload>) {
       const {productId, amount} = action.payload;
-
       if (amount <= 0) {
         state.items = state.items.filter(
           (item) => item.product.id !== productId
@@ -73,39 +90,41 @@ const cartSlice = createSlice({
         const existingItemIndex = state.items.findIndex(
           (item) => item.product.id === productId
         );
-
         if (existingItemIndex >= 0) {
           state.items[existingItemIndex].amount = amount;
         }
       }
-
       const {total, itemCount} = calculateCartTotals(state.items);
       state.total = total;
       state.itemCount = itemCount;
+      state.loading = false;
       state.error = null;
+      state.success = true;
+    },
+    updateCartItemFailure(state, action: PayloadAction<string>) {
+      state.loading = false;
+      state.error = action.payload;
+      state.success = false;
     },
 
-    incrementItem: (state, action: PayloadAction<{productId: string}>) => {
+    incrementItem(state, action: PayloadAction<{productId: string}>) {
       const {productId} = action.payload;
       const existingItemIndex = state.items.findIndex(
         (item) => item.product.id === productId
       );
-
       if (existingItemIndex >= 0) {
         state.items[existingItemIndex].amount += 1;
-
         const {total, itemCount} = calculateCartTotals(state.items);
         state.total = total;
         state.itemCount = itemCount;
       }
     },
 
-    decrementItem: (state, action: PayloadAction<{productId: string}>) => {
+    decrementItem(state, action: PayloadAction<{productId: string}>) {
       const {productId} = action.payload;
       const existingItemIndex = state.items.findIndex(
         (item) => item.product.id === productId
       );
-
       if (existingItemIndex >= 0) {
         if (state.items[existingItemIndex].amount > 1) {
           state.items[existingItemIndex].amount -= 1;
@@ -114,45 +133,50 @@ const cartSlice = createSlice({
             (item) => item.product.id !== productId
           );
         }
-
         const {total, itemCount} = calculateCartTotals(state.items);
         state.total = total;
         state.itemCount = itemCount;
       }
     },
 
-    clearCart: (state) => {
+    clearCart(state) {
       state.items = [];
       state.total = 0;
       state.itemCount = 0;
       state.error = null;
+      state.success = false;
+      state.loading = false;
     },
 
-    setCartLoading: (state, action: PayloadAction<boolean>) => {
+    setCartLoading(state, action: PayloadAction<boolean>) {
       state.loading = action.payload;
     },
 
-    setCartError: (state, action: PayloadAction<string | null>) => {
+    setCartError(state, action: PayloadAction<string | null>) {
       state.error = action.payload;
       state.loading = false;
     },
 
-    loadCartFromStorage: (state, action: PayloadAction<CartItem[]>) => {
+    loadCartFromStorage(state, action: PayloadAction<CartItem[]>) {
       state.items = action.payload;
       const {total, itemCount} = calculateCartTotals(state.items);
       state.total = total;
       state.itemCount = itemCount;
       state.loading = false;
       state.error = null;
+      state.success = false;
     },
   },
 });
 
-// Export actions
 export const {
-  addToCart,
-  removeFromCart,
-  updateCartItem,
+  addToCartRequest,
+  removeFromCartRequest,
+  removeFromCartSuccess,
+  removeFromCartFailure,
+  updateCartItemRequest,
+  updateCartItemSuccess,
+  updateCartItemFailure,
   incrementItem,
   decrementItem,
   clearCart,

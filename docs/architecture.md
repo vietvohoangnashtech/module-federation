@@ -106,20 +106,43 @@ The e-commerce platform will be composed of the following modules:
 
 ## 4. Data Flow and Inter-Module Communication
 
-To maintain decoupling, modules will primarily communicate via routing and shared Redux store mechanisms.
+To maintain decoupling, modules primarily communicate via two mechanisms: **State Sharing** through a centralized Redux store and **Event-Based Actions**.
 
-1.  **Routing (Top-Down):** The `mf_shell` controls which MFE is active based on the URL. It passes route parameters (like a product ID) as props to the mounted MFE.
-2.  **Shared Redux Store (Centralized State Management):** For global state management, a single Redux store is provided by `mf_shared_lib`. Remote applications (`mf_user`, `mf_products`, `mf_cart`, `mf_checkout`) can expose their specific reducers and sagas via Module Federation. The `mf_shell` (host) is responsible for dynamically injecting these reducers into the shared store and running the corresponding sagas. This ensures a unified state tree across the application while allowing individual MFEs to manage their domain-specific logic.
+### a. State Sharing and Dynamic Module Initialization
 
-**Example Flow: User Login**
+The core of the architecture is a shared, dynamic Redux store provided by `mf_shared_lib`. This library does not contain any feature-specific logic itself, but provides the central `store` instance and helper functions (`injectReducer`, `injectSaga`) for dynamically extending it.
 
-1.  **User Action:** The user interacts with the `LoginPage` component (exposed by `mf_user` and rendered by `mf_shell`).
-2.  **Action Dispatch:** The `LoginPage` dispatches a Redux action (e.g., `loginRequest`) to the shared store.
-3.  **Saga Execution:** The `mf_user`'s `authSaga` (which was dynamically run by `mf_shell` at startup) intercepts the `loginRequest` action.
-4.  **API Call:** The `authSaga` makes an asynchronous call to the authentication API (e.g., Supabase).
-5.  **State Update:** Based on the API response, the `authSaga` dispatches `loginSuccess` or `loginFailure` actions.
-6.  **Reducer Update:** The `mf_user`'s `authReducer` (which was dynamically injected into the shared store by `mf_shell`) processes these actions and updates the relevant slice of the global Redux state.
-7.  **UI Re-render:** Components subscribed to the authentication state in the shared store (e.g., `AuthStatus` in `mf_shell`) re-render to reflect the new login status.
+**Key Principles:**
+
+1.  **Feature-Owned Logic**: Each micro-frontend (e.g., `mf_user`, `mf_cart`) is responsible for its own Redux logic (reducers and sagas). It is a self-contained module.
+
+2.  **Dynamic Injection**: A feature module does not expose its raw sagas or reducers for the shell to manage. Instead, it exposes an `initialize()` function (e.g., `initializeUserFeature` from `mf_user/bootstrap`).
+
+3.  **Shell as Orchestrator**: The `mf_shell` is responsible for *triggering* this initialization. During its own startup process, the shell imports and calls the `initialize()` function from each core feature MFE. This single call is the shell's only responsibility in the process.
+
+4.  **Idempotent Initialization**: The `initialize()` function within each MFE is idempotent, meaning it is safe to call multiple times but will only perform the injection logic once. This prevents errors if the shell were to accidentally call it more than once.
+
+**Example Flow: User Login (New Architecture)**
+
+1.  **Application Start**: The `mf_shell` application boots up. It immediately imports and calls `initializeUserFeature()`.
+2.  **Self-Registration**: Inside `initializeUserFeature()`, the `injectReducer` and `injectSaga` functions are called. The `authReducer` is added to the central store, and the `authSaga` begins listening for actions.
+3.  **User Action**: The user navigates to the `/login` route. The shell renders the `LoginPage` component from `mf_user`.
+4.  **Action Dispatch**: The `LoginPage` component dispatches a `loginRequest` action to the shared Redux store.
+5.  **Saga Execution**: The `authSaga` (which is already running and listening) intercepts the `loginRequest` action.
+6.  **API Call & State Update**: The saga handles the API call and dispatches `loginSuccess` or `loginFailure`.
+7.  **UI Re-render**: The `authReducer` updates the state, and any component across the entire application subscribed to that state (like an `AuthStatus` component in the shell) re-renders automatically.
+
+### b. Cross-Module Type Safety (Types-as-API)
+
+To allow one MFE to safely access the Redux state of another (e.g., `mf_cart` reading the `auth` state from `mf_user`), we use a "Types-as-API" pattern:
+
+1.  **Owner Exposes Types**: The owner MFE (`mf_user`) exposes its TypeScript type definitions (e.g., `AuthState`) through a dedicated entry point in its `module-federation.config.ts` (e.g., `./types`).
+
+2.  **Consumer Imports Types**: The consumer MFE (`mf_cart`) uses `import type { AuthState } from 'mf_user/types';`. This is a build-time-only import that is erased at runtime.
+
+3.  **`tsconfig.json` Mapping**: To make this import work without creating a runtime dependency, the consumer MFE (`mf_cart`) uses a `paths` mapping in its `tsconfig.json` to tell the TypeScript compiler where to find the `mf_user` source code on the local disk. This is a monorepo-specific pattern.
+
+This ensures full type safety and decouples the modules at runtime.
 
 ---
 

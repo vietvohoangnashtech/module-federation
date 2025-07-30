@@ -27,5 +27,5 @@
     },
     "types": ["jest", "@testing-library/jest-dom"]
   },
-  "include": ["src"]
+  "include": ["src", "../mf_shared_lib/src/components/LoadingSpinner.tsx"]
 }

@@ -1,5 +1,5 @@
-import {useDispatch, useSelector} from 'react-redux';
-import type {TypedUseSelectorHook} from 'react-redux';
+import {useDispatch, useSelector, shallowEqual} from 'react-redux';
+import type {TypedUseSelectorHook, EqualityFn} from 'react-redux';
 import type {RootState, AppDispatch} from './store';
 import type {AppRootState, DynamicSliceRegistry} from './types';
 import {hasSlice} from './types';
@@ -16,14 +16,15 @@ export const useEnhancedSelector: TypedUseSelectorHook<AppRootState> =
 export function useSafeSliceSelector<K extends keyof DynamicSliceRegistry, T>(
   sliceKey: K,
   selector: (slice: NonNullable<DynamicSliceRegistry[K]>) => T,
-  fallback: T
+  fallback: T,
+  equalityFn?: EqualityFn<T>
 ): T {
   return useEnhancedSelector((state) => {
     if (hasSlice(state, sliceKey)) {
       return selector(state[sliceKey] as NonNullable<DynamicSliceRegistry[K]>);
     }
     return fallback;
-  });
+  }, equalityFn);
 }
 
 // Hook to check if a slice is available

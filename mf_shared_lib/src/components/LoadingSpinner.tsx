@@ -1,4 +1,4 @@
-import './LoadingSpinner.scss';
+import './styles/LoadingSpinner.scss';
 
 export const LoadingSpinner = () => {
   return (

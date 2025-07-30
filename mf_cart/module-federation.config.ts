@@ -5,6 +5,7 @@ export default createModuleFederationConfig({
   exposes: {
     './components': './src/components/index.ts',
     './bootstrap': './src/bootstrap.ts',
+    './cartSlice': './src/redux/cart/cartSlice.ts',
   },
   remotes: {
     mf_shared_lib: 'mf_shared_lib@http://localhost:5000/mf-manifest.json',

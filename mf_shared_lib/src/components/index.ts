@@ -46,3 +46,4 @@ export * from './Tooltip';
 export * from './Tree';
 export * from './NavigationBar';
 export * from './DialogTrigger';
+export * from './LoadingSpinner';

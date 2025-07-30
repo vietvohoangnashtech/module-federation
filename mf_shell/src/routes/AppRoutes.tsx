@@ -1,7 +1,7 @@
 import {Routes, Route} from 'react-router-dom';
 import ProtectedRoute from '../components/ProtectedRoute';
 import HomePage from 'src/pages/Home';
-import {LoadingSpinner} from 'src/components/LoadingSpinner';
+import {LoadingSpinner} from 'mf_shared_lib/components';
 import {Signup} from 'mf_user/components';
 import {UserProfile} from 'mf_user/components';
 import {Suspense} from 'react';
