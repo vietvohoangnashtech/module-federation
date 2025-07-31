@@ -48,15 +48,8 @@ const cartSlice = createSlice({
       state.success = true;
     },
 
-    removeFromCartRequest(
-      state,
-      _action: PayloadAction<RemoveFromCartPayload>
-    ) {
+    removeFromCartRequest(state, action: PayloadAction<RemoveFromCartPayload>) {
       state.loading = true;
-      state.error = null;
-      state.success = false;
-    },
-    removeFromCartSuccess(state, action: PayloadAction<RemoveFromCartPayload>) {
       const {productId} = action.payload;
       state.items = state.items.filter((item) => item.product.id !== productId);
       const {total, itemCount} = calculateCartTotals(state.items);
@@ -65,11 +58,6 @@ const cartSlice = createSlice({
       state.loading = false;
       state.error = null;
       state.success = true;
-    },
-    removeFromCartFailure(state, action: PayloadAction<string>) {
-      state.loading = false;
-      state.error = action.payload;
-      state.success = false;
     },
 
     updateCartItemRequest(
@@ -172,8 +160,6 @@ const cartSlice = createSlice({
 export const {
   addToCartRequest,
   removeFromCartRequest,
-  removeFromCartSuccess,
-  removeFromCartFailure,
   updateCartItemRequest,
   updateCartItemSuccess,
   updateCartItemFailure,

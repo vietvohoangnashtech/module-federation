@@ -46,7 +46,7 @@ export const Navigation = () => {
                 <ShoppingCart />
               </Link>
               <Popover>
-                <CartPreview />
+                <CartPreview showCheckout={!!user} />
               </Popover>
             </DialogTrigger>
           </span>

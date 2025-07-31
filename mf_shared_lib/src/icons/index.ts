@@ -1,3 +1,1 @@
-import {ShoppingCart} from 'lucide-react';
-
-export {ShoppingCart};
+export {ShoppingCart, X} from 'lucide-react';

@@ -1,6 +1,5 @@
 packages:
   - mf_cart
-  - mf_checkout
   - mf_products
   - mf_shared_lib
   - mf_shell

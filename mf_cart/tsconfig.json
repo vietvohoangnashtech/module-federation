@@ -14,6 +14,7 @@
     "strict": true,
     "noUnusedLocals": true,
     "noUnusedParameters": true,
+    "rootDir": "../",
     "paths": {
       "*": ["./@mf-types/*"],
       "mf_products/*": ["../mf_products/src/*"]

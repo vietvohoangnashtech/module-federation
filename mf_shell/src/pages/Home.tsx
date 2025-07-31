@@ -5,6 +5,7 @@ import './Home.scss';
 import {useDispatch} from 'react-redux';
 import {addToCartRequest} from 'mf_cart/cartSlice';
 import {Product} from 'mf_products/types';
+import {WelcomeBanner} from 'src/components/WelcomeBanner';
 const HomePage = () => {
   const dispatch = useDispatch();
   const handleAddToCart = (product: Product) => {
@@ -13,9 +14,7 @@ const HomePage = () => {
   return (
     <div className='home'>
       <Navigation />
-      <h1>Welcome to the Home Page</h1>
-      <p>This is the main page of the application.</p>
-      <h1>New Products</h1>
+      <WelcomeBanner />
       <ProductList onAddToCart={handleAddToCart} />
       <Footer />
     </div>
