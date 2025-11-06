@@ -4,11 +4,11 @@ packages:
   - mf_react_rsbuild
   - mf_react_vite
   - mf_react_webpack
-
+  - mfe_cli
 onlyBuiltDependencies:
-  - '@parcel/watcher'
-  - '@swc/core'
-  - '@tailwindcss/oxide'
+  - "@parcel/watcher"
+  - "@swc/core"
+  - "@tailwindcss/oxide"
   - core-js
   - esbuild
   - unrs-resolver

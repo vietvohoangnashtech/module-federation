@@ -12,3 +12,4 @@ dist/
 **/.__mf__temp/
 # Ignore coverage folders in all subdirectories
 **/coverage/
+mfe_cli/templates/
