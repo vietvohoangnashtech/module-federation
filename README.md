@@ -1,64 +1,182 @@
 # Module Federation Monorepo
 
-> Production-ready Module Federation templates with multi-build-tool support and scaffolding CLI.
+> Multi-framework Module Federation workspace with intelligent dependency optimization
 
-## Quick Start
+## íº€ Quick Start
 
 ```bash
-# Clone the repository
-git clone https://github.com/nashtech-garage/module-federation.git
-cd module-federation
-
 # Install dependencies
 pnpm install
 
-# Build and set up the CLI
-cd mfe_cli
-pnpm build
-pnpm prepare-publish  # Required for using CLI outside workspace
-pnpm link --global
+# Generate a new MFE (React, Angular, Vue, or Svelte)
+pnpm mfe generate my-app --framework react --build-tool vite
 
-# Generate a new MFE (from any directory)
-generate-mfe my-app --template react-webpack --mf-name myRemote --port 3201
+# Optimize shared dependencies across workspace
+pnpm mfe optimize
+
+# Run development servers
+pnpm dev:vite      # Vite MFE
+pnpm dev:rsbuild   # Rsbuild MFE
+pnpm dev:webpack   # Webpack MFE
 ```
 
-## Features
+## í³š Documentation
 
-- **Multiple Build Tools**: Support for Webpack, Vite, and RSBuild
-- **TypeScript Support**: Full TypeScript configuration in all templates
-- **Testing Setup**: Jest configuration included in templates
-- **Shared Library**: Common components available through `mf_lib`
-- **CLI Tool**: Powerful CLI for scaffolding new MFEs
-- **Host Application**: Example provider app showing remote loading
-```
+- **[DEV_GUIDE.md](./DEV_GUIDE.md)** - Complete developer reference
+- **[OPTIMIZATION_GUIDE.md](./OPTIMIZATION_GUIDE.md)** - Dependency optimization guide
+- **[MULTI_FRAMEWORK_IMPLEMENTATION.md](./MULTI_FRAMEWORK_IMPLEMENTATION.md)** - Multi-framework support
+- **[docs/status.md](./docs/status.md)** - Project status and roadmap
 
 ## Project Structure
 
 | Package | Description |
 |---------|-------------|
-| `mfe_cli` | CLI tool for generating new MFEs |
+| `mfe_cli` | CLI tool for generating new MFEs and optimizing dependencies |
 | `mf_lib` | Shared component library with reusable components |
 | `mf_provider_app` | Host/shell application that loads remotes |
 | `mf_react_rsbuild` | Example MFE using RSBuild |
 | `mf_react_vite` | Example MFE using Vite |
 | `mf_react_webpack` | Example MFE using Webpack 5 |
-
-## Documentation
-
-- [Module Federation CLI Guide](docs/how-to-use-mfe-cli.md)
-- [Architecture Overview](docs/architecture.md)
-- [Status and Roadmap](docs/status.md)
-- [Building the CLI](docs/building-mfe-cli.md)
-- [Development Guide](DEV_GUIDE.md)
+| `mf_angular_webpack` | Example MFE using Angular + Webpack |
+| `mf_vue_vite` | Example MFE using Vue + Vite |
+| `mf_svelte_vite` | Example MFE using Svelte + Vite |
 
 ## Features
 
-- **Multiple Build Tools**: Support for Webpack, Vite, and RSBuild
+- **Multiple Frameworks**: React, Angular, Vue, and Svelte support
+- **Multiple Build Tools**: Webpack, Vite, and RSBuild
 - **TypeScript Support**: Full TypeScript configuration in all templates
 - **Testing Setup**: Jest configuration included in templates
 - **Shared Library**: Common components available through `mf_lib`
 - **CLI Tool**: Powerful CLI for scaffolding new MFEs
+- **Dependency Optimization**: Smart analysis and optimization of shared dependencies
 - **Host Application**: Example provider app showing remote loading
+
+## Common Commands
+
+### Install Dependencies
+
+```bash
+pnpm install
+```
+
+### Run Development Servers
+
+- **Rsbuild:**
+  ```bash
+  pnpm dev:rsbuild
+  ```
+
+- **Vite:**
+  ```bash
+  pnpm dev:vite
+  ```
+
+- **Webpack:**
+  ```bash
+  pnpm dev:webpack
+  ```
+
+### Build the Project
+
+- **Library:**
+  ```bash
+  pnpm build:lib
+  ```
+
+- **Provider:**
+  ```bash
+  pnpm build:provider
+  ```
+
+- **Rsbuild:**
+  ```bash
+  pnpm build:rsbuild
+  ```
+
+- **Vite:**
+  ```bash
+  pnpm build:vite
+  ```
+
+- **Webpack:**
+  ```bash
+  pnpm build:webpack
+  ```
+
+### Run Tests
+
+- **Webpack:**
+  ```bash
+  pnpm test:webpack
+  ```
+
+- **Vite:**
+  ```bash
+  pnpm test:vite
+  ```
+
+### Run Storybook
+
+```bash
+pnpm storybook
+```
+
+### Lint and Type Check
+
+- **Lint Vite app:**
+  ```bash
+  pnpm lint:vite
+  ```
+
+- **Type check Vite app:**
+  ```bash
+  pnpm typecheck:vite
+  ```
+
+## Generate New MFE
+
+### Using Multi-Framework Mode
+
+```bash
+pnpm mfe generate my-app \
+  --framework react \
+  --build-tool vite \
+  --mf-name myRemote \
+  --port 3200
+```
+
+Supported combinations:
+- `react` + `vite | webpack | rsbuild`
+- `angular` + `webpack`
+- `vue` + `vite | webpack`
+- `svelte` + `vite`
+
+### Using Legacy Template Mode
+
+```bash
+pnpm mfe generate my-app \
+  --template react-vite \
+  --mf-name myRemote \
+  --port 3200
+```
+
+## Optimize Dependencies
+
+Analyze and optimize shared dependencies across the workspace:
+
+```bash
+# Analyze and show recommendations
+pnpm mfe optimize
+
+# Analyze and auto-apply optimizations
+pnpm mfe optimize --apply
+
+# Preview what would be changed
+pnpm mfe optimize --dry-run
+```
+
+See [OPTIMIZATION_GUIDE.md](./OPTIMIZATION_GUIDE.md) for detailed usage.
 
 ## Contributing
 
@@ -72,76 +190,3 @@ generate-mfe my-app --template react-webpack --mf-name myRemote --port 3201
 ## License
 
 This project is licensed under the MIT License - see the LICENSE file for details.
-
-## Common Commands
-
-- **Install dependencies**
-  ```bash
-  pnpm install
-  ```
-- **Run development servers**
-  - Rsbuild:
-    ```bash
-    pnpm dev:rsbuild
-    ```
-  - Vite:
-    ```bash
-    pnpm dev:vite
-    ```
-  - Webpack:
-    ```bash
-    pnpm dev:webpack
-    ```
-- **Run storybook**
-  ```bash
-  pnpm storybook
-  ```
-- **Build the project**
-  - Library:
-    ```bash
-    pnpm build:lib
-    ```
-  - Provider:
-    ```bash
-    pnpm build:provider
-    ```
-  - Rsbuild:
-    ```bash
-    pnpm build:rsbuild
-    ```
-  - Vite:
-    ```bash
-    pnpm build:vite
-    ```
-  - Webpack:
-    ```bash
-    pnpm build:webpack
-    ```
-- **Run tests**
-  - Webpack:
-    ```bash
-    pnpm test:webpack
-    ```
-  - Vite:
-    ```bash
-    pnpm test:vite
-    ```
-    <!--
-  - All subdirectories:
-    ```bash
-    pnpm test
-    ```
-    -->
-
-## Lint and Typecheck (Vite)
-
-- **Lint Vite app**
-  ```bash
-  pnpm lint:vite
-  ```
-- **Typecheck Vite app**
-  ```bash
-  pnpm typecheck:vite
-  ```
-
-Refer to your `package.json` for the full list of

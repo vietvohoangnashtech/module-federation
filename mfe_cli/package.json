@@ -1,25 +1,18 @@
 {
-  "name": "@vietvohoang/mfe-cli",
-  "version": "0.1.3",
+  "name": "mfe-cli",
+  "version": "0.1.0",
   "private": false,
-  "publishConfig": {
-    "access": "public"
-  },
   "type": "module",
   "bin": {
-    "generate-mfe": "./dist/index.js",
-    "mfe-cli": "./dist/index.js"
-  },
-  "exports": {
-    ".": "./dist/index.js"
+    "generate-mfe": "dist/index.js",
+    "mfe": "dist/index.js",
+    "mfe-optimize": "dist/index.js"
   },
   "files": [
-    "dist",
-    "templates"
+    "dist"
   ],
   "scripts": {
     "build": "tsc -p tsconfig.json",
-    "prepare-publish": "pnpm build && node dist/prepare-publish.js",
     "dev": "tsc -w -p tsconfig.json",
     "start": "node dist/index.js --help",
     "lint": "eslint src --ext .ts",
@@ -28,6 +21,7 @@
   "dependencies": {
     "chalk": "^5.3.0",
     "fs-extra": "^11.2.0",
+    "glob": "^11.0.0",
     "inquirer": "^9.2.23",
     "yaml": "^2.5.1",
     "yargs": "^17.7.2"

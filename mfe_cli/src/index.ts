@@ -8,6 +8,7 @@ import chalk from 'chalk';
 import { execSync } from 'node:child_process';
 import { mutateWorkspace } from './workspace.js';
 import { createFromTemplate } from './templates.js';
+import { optimizeWorkspace } from './optimizer.js';
 
 interface CliArgs {
   name?: string;
@@ -177,28 +178,7 @@ async function runInstall(targetDir: string, packageName: string) {
   }
 }
 
-async function main() {
-  console.log(chalk.bold.cyan('\n🚀 Module Federation CLI\n'));
-  
-  const argv = (yargs(hideBin(process.argv))
-    .scriptName('generate-mfe')
-    .usage('$0 <name> [options]')
-    .positional('name', { describe: 'Directory/package name', type: 'string' })
-    .option('template', { type: 'string', choices: TEMPLATES, describe: 'Template key (legacy)' })
-    .option('framework', { type: 'string', choices: FRAMEWORKS, describe: 'Framework (react/angular/vue/svelte)' })
-    .option('build-tool', { type: 'string', describe: 'Build tool (vite/webpack/rsbuild)' })
-    .option('mf-name', { type: 'string', describe: 'Container/remote name', demandOption: false })
-    .option('port', { type: 'number', describe: 'Dev server port' })
-    .option('shared', { type: 'string', describe: 'Shared/peer deps' })
-    .option('install', { type: 'boolean', default: false, describe: 'Run pnpm install after generation' })
-    .option('git-init', { type: 'boolean', default: false })
-    .option('force', { type: 'boolean', default: false, describe: 'Overwrite existing directory' })
-    .example('$0 my-app --framework react --build-tool vite --mf-name myRemote --port 3200', 'Generate a React + Vite MFE')
-    .example('$0 ng-app --framework angular --build-tool webpack --mf-name ngRemote', 'Generate an Angular + Webpack MFE')
-    .example('$0 vue-app --framework vue --build-tool vite --mf-name vueRemote', 'Generate a Vue + Vite MFE')
-    .example('$0 analytics --template react-webpack --mf-name analytics --install', 'Generate MFE (legacy template mode)')
-    .help().argv) as any as CliArgs;
-
+async function runGenerate(argv: CliArgs) {
   const full = await ensureArgs(argv);
   
   if (!TEMPLATES.includes(full.template) && !full.framework) {
@@ -236,6 +216,96 @@ async function main() {
     console.error(chalk.red.bold('\n❌ Generation failed:'), error instanceof Error ? error.message : String(error));
     process.exit(1);
   }
+}
+
+async function runOptimize(options: { apply?: boolean; dryRun?: boolean }) {
+  const root = process.cwd();
+  
+  try {
+    // Check if we're in a workspace
+    const workspaceFile = path.join(root, 'pnpm-workspace.yaml');
+    if (!await fs.pathExists(workspaceFile)) {
+      console.error(chalk.red('\n❌ Not in a pnpm workspace. Run this command from the workspace root.\n'));
+      process.exit(1);
+    }
+    
+    // Run optimization
+    const report = await optimizeWorkspace(root, options);
+    
+    // If not applying, ask if user wants to apply
+    if (!options.apply && report.recommendations.toShare.length > 0) {
+      const { shouldApply } = await inquirer.prompt([
+        {
+          type: 'confirm',
+          name: 'shouldApply',
+          message: 'Would you like to apply these optimizations now?',
+          default: false
+        }
+      ]);
+      
+      if (shouldApply) {
+        await optimizeWorkspace(root, { apply: true, dryRun: false });
+      } else {
+        console.log(chalk.cyan('\n💡 Run with --apply flag to apply optimizations\n'));
+      }
+    }
+  } catch (error) {
+    console.error(chalk.red.bold('\n❌ Optimization failed:'), error instanceof Error ? error.message : String(error));
+    process.exit(1);
+  }
+}
+
+async function main() {
+  console.log(chalk.bold.cyan('\n🚀 Module Federation CLI\n'));
+  
+  const argv = yargs(hideBin(process.argv))
+    .scriptName('mfe')
+    .command(
+      ['generate <name>', '$0 <name>'],
+      'Generate a new MFE package',
+      (yargs) => {
+        return yargs
+          .positional('name', { describe: 'Directory/package name', type: 'string', demandOption: true })
+          .option('template', { type: 'string', choices: TEMPLATES, describe: 'Template key (legacy)' })
+          .option('framework', { type: 'string', choices: FRAMEWORKS, describe: 'Framework (react/angular/vue/svelte)' })
+          .option('build-tool', { type: 'string', describe: 'Build tool (vite/webpack/rsbuild)' })
+          .option('mf-name', { type: 'string', describe: 'Container/remote name' })
+          .option('port', { type: 'number', describe: 'Dev server port' })
+          .option('shared', { type: 'string', describe: 'Shared/peer deps' })
+          .option('install', { type: 'boolean', default: false, describe: 'Run pnpm install after generation' })
+          .option('git-init', { type: 'boolean', default: false })
+          .option('force', { type: 'boolean', default: false, describe: 'Overwrite existing directory' })
+          .example('$0 my-app --framework react --build-tool vite --mf-name myRemote --port 3200', 'Generate a React + Vite MFE')
+          .example('$0 ng-app --framework angular --build-tool webpack --mf-name ngRemote', 'Generate an Angular + Webpack MFE');
+      },
+      async (argv) => {
+        await runGenerate(argv as any);
+      }
+    )
+    .command(
+      'optimize',
+      'Analyze and optimize shared dependencies',
+      (yargs) => {
+        return yargs
+          .option('apply', { type: 'boolean', default: false, describe: 'Automatically apply optimizations' })
+          .option('dry-run', { type: 'boolean', default: false, describe: 'Preview changes without applying' })
+          .example('$0 optimize', 'Analyze dependencies and show recommendations')
+          .example('$0 optimize --apply', 'Analyze and auto-apply optimizations')
+          .example('$0 optimize --dry-run', 'Preview what would be changed');
+      },
+      async (argv) => {
+        await runOptimize({ apply: argv.apply, dryRun: argv.dryRun });
+      }
+    )
+    .help()
+    .alias('h', 'help')
+    .version()
+    .alias('v', 'version')
+    .demandCommand(1, 'Please specify a command')
+    .strict()
+    .argv;
+
+  await argv;
 }
 
 main().catch(err => {
