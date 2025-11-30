@@ -1,34 +1,73 @@
 # mfe-cli
 
-A lightweight CLI tool for scaffolding Module Federation-based micro-frontend apps using modern frontend frameworks like **Vite**, **Webpack**, or **Rsbuild**.
+A comprehensive CLI tool for Module Federation workspace management. Generate, optimize, discover, and manage micro-frontend applications using **React**, **Angular**, **Vue**, or **Svelte** with **Vite**, **Webpack**, or **Rsbuild**.
 
-This tool helps you generate self-contained, framework-ready microfrontends (Remotes) or host apps (Shells), with fully configured **Module Federation**, build tooling, and shared dependencies.
-
----
-
-## üöÄ Quick Start
-
-Use `npx` to instantly scaffold a new app:
-
-```bash
-npx @vietvohoang/mfe-cli my-dashboard \
-  --template react-vite \
-  --mf-name dashboardRemote \
-  --port 3200 \
-  --install
-```
-
-or
-
-```bash
-npx @vietvohoang/mfe-cli my-dashboard
-```
-
-üéâ This will create a new app inside a folder called `my-dashboard` using the selected template.
+**Features:**
+- ‚ú® **Feature 1** - Multi-framework code generation (4 frameworks √ó 3 build tools)
+- ‚ú® **Feature 2** - Smart dependency optimization with automatic analysis
+- ‚ú® **Feature 3** - Zero-config federation with automatic discovery
+- ‚ú® **Feature 4** - Dynamic remote discovery with runtime registration
 
 ---
 
-## üì¶ Install Globally (optional)
+## Ì∫Ä Quick Start
+
+### Generate a New MFE (Feature 1)
+
+```bash
+# Interactive mode
+npx @vietvohoang/mfe-cli generate my-app
+
+# With specific framework + build tool
+npx @vietvohoang/mfe-cli generate my-app \
+  --framework react \
+  --build-tool vite \
+  --mf-name myRemote \
+  --port 3200
+```
+
+### Optimize Dependencies (Feature 2)
+
+```bash
+# Analyze and show recommendations
+pnpm mfe optimize
+
+# Auto-apply optimizations
+pnpm mfe optimize --apply
+```
+
+### Zero-Config Setup (Feature 3)
+
+```bash
+# Discover all remotes in workspace
+pnpm mfe discover --save
+
+# Initialize zero-config for current package
+pnpm mfe init
+
+# Create host with all discovered remotes
+pnpm mfe init --host
+```
+
+### Dynamic Remote Discovery (Feature 4)
+
+```bash
+# Start registry service
+pnpm mfe registry start
+
+# Register current remote
+pnpm mfe registry register
+
+# List all registered remotes
+pnpm mfe registry list
+
+# Check registry status
+pnpm mfe registry status
+```
+
+---
+
+## Ì≥¶ Install Globally
 
 ```bash
 npm install -g @vietvohoang/mfe-cli
@@ -36,52 +75,116 @@ npm install -g @vietvohoang/mfe-cli
 pnpm add -g @vietvohoang/mfe-cli
 ```
 
-Then run:
+Then use any command:
 
 ```bash
-generate-mfe my-dashboard --template react-webpack
+mfe generate my-app --framework react --build-tool vite
+mfe optimize --apply
+mfe discover --save
+mfe registry start
 ```
 
 ---
 
-## üß∞ Available Templates
+## Ì∑∞ Supported Frameworks & Build Tools
 
-| Template Key       | Framework          | Description                    |
-|--------------------|--------------------|--------------------------------|
-| `react-vite`       | React + Vite       | Fast dev server, simple setup  |
-| `react-webpack`    | React + Webpack    | Classic Webpack 5 + MF         |
-| `react-rsbuild`    | React + Rsbuild    | Extremely fast build with Rspack|
-| `provider-app`     | React + Rspack     | MF Provider-ready example      |
+| Framework | Vite | Webpack | Rsbuild |
+|-----------|------|---------|---------|
+| React     | ‚úÖ   | ‚úÖ      | ‚úÖ      |
+| Angular   | -    | ‚úÖ      | -       |
+| Vue       | ‚úÖ   | ‚úÖ      | -       |
+| Svelte    | ‚úÖ   | -       | -       |
 
----
+### All Available Templates
 
-## ‚öôÔ∏è CLI Options
-
-| Option              | Type     | Description |
-|---------------------|----------|-------------|
-| `--template`        | string   | Template to use (e.g. `react-vite`) |
-| `--mf-name`         | string   | Module Federation `name` (e.g. `dashboardRemote`) |
-| `--port`            | number   | Dev server port (default: 3000) |
-| `--shared`          | string   | Comma-separated shared libs (default: `react,react-dom`) |
-| `--install`         | boolean  | Automatically install dependencies |
-| `--git-init`        | boolean  | Initialize Git in the new project |
-| `--force`           | boolean  | Override existing folder if exists |
+- `react-vite` - React + Vite
+- `react-webpack` - React + Webpack
+- `react-rsbuild` - React + Rsbuild
+- `angular-webpack` - Angular + Webpack
+- `vue-vite` - Vue + Vite
+- `svelte-vite` - Svelte + Vite
+- `provider` - Provider/Host app
 
 ---
 
-## üìÅ Project Output
+## ‚öôÔ∏è CLI Commands
 
-Each generated app contains:
+### `mfe generate <name>`
 
-- Proper `package.json` and MF config
-- `src/bootstrap.tsx` entry for async loading
-- React app entry with exposed components (if Remote)
-- Pre-configured dev/production builds
-- Shared dependencies (React, react-dom, optional UI libs)
+Generate a new MFE package.
+
+**Options:**
+- `--framework` - Framework: react|angular|vue|svelte
+- `--build-tool` - Build tool: vite|webpack|rsbuild
+- `--template` - Legacy template key (for backwards compatibility)
+- `--mf-name` - Module Federation container name
+- `--port` - Dev server port (default: auto-detected)
+- `--shared` - Comma-separated shared libs
+- `--install` - Auto-install dependencies
+- `--force` - Overwrite existing directory
+
+### `mfe optimize`
+
+Analyze and optimize shared dependencies.
+
+**Options:**
+- `--apply` - Automatically apply optimizations
+- `--dry-run` - Preview changes without applying
+
+### `mfe discover`
+
+Discover all Module Federation remotes in workspace.
+
+**Options:**
+- `--save` - Save registry to .mfe-registry.json
+- `--print` - Print to console (default: true)
+
+### `mfe init`
+
+Initialize zero-config Module Federation setup.
+
+**Options:**
+- `--path` - Package path (default: current directory)
+- `--host` - Configure as host with auto-discovered remotes
+
+### `mfe registry`
+
+Manage the Module Federation registry service.
+
+**Subcommands:**
+- `start` - Start registry service (port 3999)
+- `register` - Register current package
+- `list` - List all registered remotes
+- `status` - Check registry health
 
 ---
 
-## üìò Resources
+## Ì≥Å Project Structure
+
+Each generated app includes:
+
+- Configured `module-federation.config.*`
+- Async-ready `src/bootstrap.*` entry point
+- Framework-specific components and examples
+- Shared dependencies pre-configured
+- Build tool optimized for fast development
+- TypeScript and Jest setup included
+
+---
+
+## Ì≥ö Documentation
+
+For detailed guides, see the root directory documentation:
+
+- **[MULTI_FRAMEWORK_IMPLEMENTATION.md](../MULTI_FRAMEWORK_IMPLEMENTATION.md)** - Feature 1: Multi-framework support
+- **[OPTIMIZATION_GUIDE.md](../OPTIMIZATION_GUIDE.md)** - Feature 2: Dependency optimization
+- **[ZERO_CONFIG_GUIDE.md](../ZERO_CONFIG_GUIDE.md)** - Feature 3: Zero-config federation
+- **[DYNAMIC_DISCOVERY_GUIDE.md](../DYNAMIC_DISCOVERY_GUIDE.md)** - Feature 4: Dynamic discovery
+- **[DEV_GUIDE.md](../DEV_GUIDE.md)** - Contributing and development
+
+---
+
+## Ì≥ò Resources
 
 Learn more about Module Federation:
 - https://module-federation.io
@@ -90,12 +193,12 @@ Learn more about Module Federation:
 
 ---
 
-## üë®‚Äçüíª Contributing / Local Development
+## Ì±®‚ÄçÌ≤ª Contributing
 
-If you're interested in contributing or want to debug the CLI locally, check out `DEV_GUIDE.md`.
+Check out `DEV_GUIDE.md` for development setup and contribution guidelines.
 
 ---
 
-## üìù License
+## Ì≥ù License
 
 MIT ¬© 2025 [Viet Vo Hoang](https://github.com/vietvohoang)

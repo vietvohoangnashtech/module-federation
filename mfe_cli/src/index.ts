@@ -17,6 +17,8 @@ import {
   printRegistry,
   type RemoteRegistry
 } from './discovery.js';
+import { startRegistryService, RegistryService, type RegistryConfig } from './registry-service.js';
+import { autoRegisterFromPackage, unregisterRemote, startAutoRegisterWatch, type AutoRegisterConfig } from './auto-register.js';
 
 interface CliArgs {
   name?: string;
@@ -353,6 +355,158 @@ async function runInit(options: { packagePath?: string; isHost?: boolean }) {
   }
 }
 
+async function runRegistryStart(config: Partial<RegistryConfig>) {
+  console.log(chalk.cyan('\n🚀 Starting Module Federation Registry Service...\n'));
+  
+  try {
+    await startRegistryService(config);
+    
+    // Keep running
+    console.log(chalk.gray('Press Ctrl+C to stop\n'));
+  } catch (error) {
+    console.error(chalk.red.bold('\n❌ Registry start failed:'), error instanceof Error ? error.message : String(error));
+    process.exit(1);
+  }
+}
+
+async function runRegistryRegister(options: { registryUrl: string; packagePath?: string; watch?: boolean }) {
+  console.log(chalk.cyan('\n📝 Registering with registry service...\n'));
+  
+  try {
+    const config: AutoRegisterConfig = {
+      registryUrl: options.registryUrl,
+      packagePath: options.packagePath,
+      autoDetect: true,
+      onRegistered: (name, version) => {
+        console.log(chalk.green(`\n✅ Successfully registered: ${name}@${version}\n`));
+      },
+      onError: (error) => {
+        console.error(chalk.red(`\n❌ Registration failed: ${error.message}\n`));
+      }
+    };
+    
+    const success = await autoRegisterFromPackage(config);
+    
+    if (!success) {
+      process.exit(1);
+    }
+    
+    // Watch mode
+    if (options.watch) {
+      console.log(chalk.cyan('👀 Watching for changes...'));
+      const cleanup = startAutoRegisterWatch(config);
+      
+      // Keep process alive
+      process.on('SIGINT', () => {
+        cleanup();
+        console.log(chalk.yellow('\n⏹️  Watch stopped\n'));
+        process.exit(0);
+      });
+    }
+  } catch (error) {
+    console.error(chalk.red.bold('\n❌ Registration failed:'), error instanceof Error ? error.message : String(error));
+    process.exit(1);
+  }
+}
+
+async function runRegistryList(options: { 
+  registryUrl: string; 
+  environment?: 'development' | 'staging' | 'production'; 
+  healthyOnly?: boolean 
+}) {
+  try {
+    const params = new URLSearchParams();
+    if (options.environment) params.set('env', options.environment);
+    if (options.healthyOnly) params.set('healthy', 'true');
+    
+    const url = `${options.registryUrl}/remotes?${params}`;
+    const response = await fetch(url);
+    
+    if (!response.ok) {
+      throw new Error(`Registry responded with ${response.status}`);
+    }
+    
+    const data = await response.json();
+    const remotes = data.remotes || [];
+    
+    console.log(chalk.cyan.bold(`\n📦 Registered Remotes (${remotes.length})\n`));
+    
+    if (remotes.length === 0) {
+      console.log(chalk.gray('  No remotes found\n'));
+      return;
+    }
+    
+    remotes.forEach((remote: any) => {
+      const healthIcon = remote.health?.status === 'healthy' ? '✅' : 
+                        remote.health?.status === 'unhealthy' ? '❌' : '❔';
+      
+      console.log(chalk.bold(`  ${healthIcon} ${remote.name}@${remote.version}`));
+      console.log(chalk.gray(`     URL: ${remote.url}`));
+      console.log(chalk.gray(`     Framework: ${remote.framework || 'unknown'} (${remote.buildTool || 'unknown'})`));
+      
+      if (remote.exposes) {
+        const exposeKeys = Object.keys(remote.exposes);
+        if (exposeKeys.length > 0) {
+          console.log(chalk.gray(`     Exposes: ${exposeKeys.join(', ')}`));
+        }
+      }
+      
+      if (remote.deployment) {
+        console.log(chalk.gray(`     Environment: ${remote.deployment.environment}`));
+        if (remote.deployment.canary) {
+          console.log(chalk.yellow(`     🎯 Canary deployment`));
+        }
+      }
+      
+      console.log('');
+    });
+    
+    console.log(chalk.cyan(`Total: ${data.count} remotes (${data.totalVersions} versions)\n`));
+  } catch (error) {
+    console.error(chalk.red.bold('\n❌ List failed:'), error instanceof Error ? error.message : String(error));
+    process.exit(1);
+  }
+}
+
+async function runRegistryStatus(options: { registryUrl: string }) {
+  try {
+    const response = await fetch(`${options.registryUrl}/health`);
+    
+    if (!response.ok) {
+      throw new Error(`Registry responded with ${response.status}`);
+    }
+    
+    const data = await response.json();
+    
+    console.log(chalk.green.bold('\n✅ Registry Service Status\n'));
+    console.log(chalk.cyan(`  Status: ${data.status}`));
+    console.log(chalk.gray(`  Uptime: ${Math.floor(data.uptime / 60)} minutes`));
+    console.log(chalk.gray(`  URL: ${options.registryUrl}`));
+    
+    if (data.registry) {
+      console.log(chalk.cyan('\n  Registry Data:'));
+      console.log(chalk.gray(`    Total Remotes: ${data.registry.totalRemotes}`));
+      console.log(chalk.gray(`    Total Versions: ${data.registry.totalVersions}`));
+      console.log(chalk.green(`    Healthy: ${data.registry.healthyRemotes}`));
+      if (data.registry.unhealthyRemotes > 0) {
+        console.log(chalk.red(`    Unhealthy: ${data.registry.unhealthyRemotes}`));
+      }
+    }
+    
+    if (data.config) {
+      console.log(chalk.cyan('\n  Configuration:'));
+      console.log(chalk.gray(`    Port: ${data.config.port}`));
+      console.log(chalk.gray(`    Health Check Interval: ${data.config.healthCheckInterval}ms`));
+    }
+    
+    console.log('');
+  } catch (error) {
+    console.error(chalk.red.bold('\n❌ Status check failed:'), error instanceof Error ? error.message : String(error));
+    console.log(chalk.yellow('\n⚠️  Registry service may not be running. Start it with: mfe registry start\n'));
+    process.exit(1);
+  }
+}
+
 async function main() {
   console.log(chalk.bold.cyan('\n🚀 Module Federation CLI\n'));
   
@@ -422,6 +576,85 @@ async function main() {
       },
       async (argv) => {
         await runInit({ packagePath: argv.path, isHost: argv.host });
+      }
+    )
+    .command(
+      'registry',
+      'Manage the Module Federation registry service',
+      (yargs) => {
+        return yargs
+          .command(
+            'start',
+            'Start the registry service',
+            (yargs) => {
+              return yargs
+                .option('port', { type: 'number', default: 3999, describe: 'Registry server port' })
+                .option('host', { type: 'string', default: 'localhost', describe: 'Registry server host' })
+                .option('persist', { type: 'string', default: '.mfe-registry-service.json', describe: 'Registry persistence file' })
+                .example('$0 registry start', 'Start registry on default port 3999')
+                .example('$0 registry start --port 4000', 'Start registry on custom port');
+            },
+            async (argv) => {
+              await runRegistryStart({ 
+                port: argv.port, 
+                host: argv.host, 
+                persistPath: argv.persist 
+              });
+            }
+          )
+          .command(
+            'register',
+            'Register current package with registry',
+            (yargs) => {
+              return yargs
+                .option('url', { type: 'string', default: 'http://localhost:3999', describe: 'Registry service URL' })
+                .option('path', { type: 'string', describe: 'Package path (defaults to current directory)' })
+                .option('watch', { type: 'boolean', default: false, describe: 'Watch for changes and re-register' })
+                .example('$0 registry register', 'Register current package')
+                .example('$0 registry register --watch', 'Register and watch for changes')
+                .example('$0 registry register --url http://prod-registry:3999', 'Register to production registry');
+            },
+            async (argv) => {
+              await runRegistryRegister({ 
+                registryUrl: argv.url, 
+                packagePath: argv.path, 
+                watch: argv.watch 
+              });
+            }
+          )
+          .command(
+            'list',
+            'List all registered remotes',
+            (yargs) => {
+              return yargs
+                .option('url', { type: 'string', default: 'http://localhost:3999', describe: 'Registry service URL' })
+                .option('env', { type: 'string', choices: ['development', 'staging', 'production'], describe: 'Filter by environment' })
+                .option('healthy', { type: 'boolean', default: false, describe: 'Show only healthy remotes' })
+                .example('$0 registry list', 'List all registered remotes')
+                .example('$0 registry list --env production', 'List production remotes only');
+            },
+            async (argv) => {
+              await runRegistryList({ 
+                registryUrl: argv.url, 
+                environment: argv.env as any, 
+                healthyOnly: argv.healthy 
+              });
+            }
+          )
+          .command(
+            'status',
+            'Check registry service status',
+            (yargs) => {
+              return yargs
+                .option('url', { type: 'string', default: 'http://localhost:3999', describe: 'Registry service URL' })
+                .example('$0 registry status', 'Check registry health');
+            },
+            async (argv) => {
+              await runRegistryStatus({ registryUrl: argv.url });
+            }
+          )
+          .demandCommand(1, 'Please specify a registry command')
+          .help();
       }
     )
     .help()

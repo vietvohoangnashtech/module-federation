@@ -476,7 +476,7 @@ importers:
         specifier: ^11.0.4
         version: 11.0.4
       '@types/inquirer':
-        specifier: ^9.0.9
+        specifier: 9.0.9
         version: 9.0.9
       '@types/node':
         specifier: ^22.13.9

@@ -21,6 +21,12 @@ pnpm mfe discover --save         # Scan and save registry
 # Optimize shared dependencies
 pnpm mfe optimize --apply        # Analyze and optimize
 
+# Dynamic remote discovery (NEW!)
+pnpm mfe registry start          # Start registry service
+pnpm mfe registry register       # Register current remote
+pnpm mfe registry list           # List all registered remotes
+pnpm mfe registry status         # Check registry health
+
 # Run development servers
 pnpm dev:vite      # Vite MFE
 pnpm dev:rsbuild   # Rsbuild MFE
@@ -29,7 +35,15 @@ pnpm dev:webpack   # Webpack MFE
 
 ## ✨ Features
 
-### 🎯 Zero-Config Federation (NEW!)
+### 🔌 Dynamic Remote Discovery (NEW!)
+- **Runtime discovery**: Load remotes dynamically without build-time config
+- **Registry service**: Central registry with REST API
+- **Auto-registration**: Remotes self-register on startup
+- **Health monitoring**: Track remote availability in real-time
+- **Version management**: Support multiple versions and canary deployments
+- **Module caching**: 3-level cache for optimal performance
+
+### 🎯 Zero-Config Federation
 - Automatic remote discovery across workspace
 - Intelligent config generation (framework, build tool, exposes, shared)
 - Remote registry management
@@ -48,6 +62,7 @@ pnpm dev:webpack   # Webpack MFE
 
 ## 📚 Documentation
 
+- **[DYNAMIC_DISCOVERY_GUIDE.md](./DYNAMIC_DISCOVERY_GUIDE.md)** - Runtime remote discovery (NEW!)
 - **[ZERO_CONFIG_GUIDE.md](./ZERO_CONFIG_GUIDE.md)** - Zero-config federation guide
 - **[OPTIMIZATION_GUIDE.md](./OPTIMIZATION_GUIDE.md)** - Dependency optimization
 - **[MULTI_FRAMEWORK_IMPLEMENTATION.md](./MULTI_FRAMEWORK_IMPLEMENTATION.md)** - Multi-framework support
