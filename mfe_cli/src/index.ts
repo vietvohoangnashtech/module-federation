@@ -9,6 +9,14 @@ import { execSync } from 'node:child_process';
 import { mutateWorkspace } from './workspace.js';
 import { createFromTemplate } from './templates.js';
 import { optimizeWorkspace } from './optimizer.js';
+import {
+  discoverRemotes,
+  generateZeroConfig,
+  saveRegistry,
+  loadRegistry,
+  printRegistry,
+  type RemoteRegistry
+} from './discovery.js';
 
 interface CliArgs {
   name?: string;
@@ -255,6 +263,96 @@ async function runOptimize(options: { apply?: boolean; dryRun?: boolean }) {
   }
 }
 
+async function runDiscover(options: { save?: boolean; print?: boolean }) {
+  const root = process.cwd();
+  
+  try {
+    // Discover all remotes
+    const registry = await discoverRemotes({ workspaceRoot: root });
+    
+    // Print registry
+    if (options.print !== false) {
+      printRegistry(registry);
+    }
+    
+    // Save registry
+    if (options.save) {
+      await saveRegistry(registry);
+    }
+    
+    return registry;
+  } catch (error) {
+    console.error(chalk.red.bold('\n❌ Discovery failed:'), error instanceof Error ? error.message : String(error));
+    process.exit(1);
+  }
+}
+
+async function runInit(options: { packagePath?: string; isHost?: boolean }) {
+  const root = process.cwd();
+  const packagePath = options.packagePath || root;
+  
+  try {
+    console.log(chalk.cyan('\n🔧 Generating zero-config Module Federation setup...\n'));
+    
+    // Discover remotes for registry
+    let registry: RemoteRegistry | undefined;
+    if (options.isHost) {
+      registry = await discoverRemotes({ workspaceRoot: root });
+    }
+    
+    // Generate config
+    const config = await generateZeroConfig(packagePath, {
+      registry,
+      isHost: options.isHost
+    });
+    
+    // Determine config filename
+    const pkgJson = await fs.readJson(path.join(packagePath, 'package.json'));
+    const deps = { ...pkgJson.dependencies, ...pkgJson.devDependencies };
+    
+    let configFilename = 'module-federation.config.ts';
+    if (deps['vite']) configFilename = 'module-federation.config.ts';
+    else if (deps['webpack']) configFilename = 'module-federation.config.cjs';
+    else if (deps['@rsbuild/core']) configFilename = 'module-federation.config.ts';
+    
+    const configPath = path.join(packagePath, configFilename);
+    
+    // Check if config already exists
+    if (await fs.pathExists(configPath)) {
+      const { overwrite } = await inquirer.prompt([
+        {
+          type: 'confirm',
+          name: 'overwrite',
+          message: `Config file ${configFilename} already exists. Overwrite?`,
+          default: false
+        }
+      ]);
+      
+      if (!overwrite) {
+        console.log(chalk.yellow('\n⚠️  Aborted. Config file not modified.\n'));
+        return;
+      }
+    }
+    
+    // Write config
+    await fs.writeFile(configPath, config, 'utf8');
+    
+    console.log(chalk.green(`✅ Generated ${configFilename}`));
+    console.log(chalk.cyan('\n💡 Configuration auto-detected:'));
+    console.log(chalk.gray('   - Framework and dependencies'));
+    console.log(chalk.gray('   - Exposed modules'));
+    console.log(chalk.gray('   - Shared dependencies'));
+    if (options.isHost) {
+      console.log(chalk.gray('   - Remote applications'));
+    }
+    console.log(chalk.green('\n✨ Zero-config setup complete!\n'));
+    
+  } catch (error) {
+    console.error(chalk.red.bold('\n❌ Init failed:'), error instanceof Error ? error.message : String(error));
+    process.exit(1);
+  }
+}
+
 async function main() {
   console.log(chalk.bold.cyan('\n🚀 Module Federation CLI\n'));
   
@@ -295,6 +393,35 @@ async function main() {
       },
       async (argv) => {
         await runOptimize({ apply: argv.apply, dryRun: argv.dryRun });
+      }
+    )
+    .command(
+      'discover',
+      'Discover all Module Federation remotes in workspace',
+      (yargs) => {
+        return yargs
+          .option('save', { type: 'boolean', default: false, describe: 'Save registry to .mfe-registry.json' })
+          .option('print', { type: 'boolean', default: true, describe: 'Print registry to console' })
+          .example('$0 discover', 'Discover and display all remotes')
+          .example('$0 discover --save', 'Discover and save registry file');
+      },
+      async (argv) => {
+        await runDiscover({ save: argv.save, print: argv.print });
+      }
+    )
+    .command(
+      'init',
+      'Initialize zero-config Module Federation setup',
+      (yargs) => {
+        return yargs
+          .option('path', { type: 'string', describe: 'Package path (defaults to current directory)' })
+          .option('host', { type: 'boolean', default: false, describe: 'Configure as host application' })
+          .example('$0 init', 'Generate zero-config for current package')
+          .example('$0 init --host', 'Generate config with auto-discovered remotes')
+          .example('$0 init --path ./my-app', 'Generate config for specific package');
+      },
+      async (argv) => {
+        await runInit({ packagePath: argv.path, isHost: argv.host });
       }
     )
     .help()

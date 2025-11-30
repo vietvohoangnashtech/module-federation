@@ -1,8 +1,8 @@
 # Module Federation Monorepo
 
-> Multi-framework Module Federation workspace with intelligent dependency optimization
+> Multi-framework Module Federation workspace with intelligent dependency optimization and zero-config setup
 
-## íº€ Quick Start
+## ðŸš€ Quick Start
 
 ```bash
 # Install dependencies
@@ -11,8 +11,15 @@ pnpm install
 # Generate a new MFE (React, Angular, Vue, or Svelte)
 pnpm mfe generate my-app --framework react --build-tool vite
 
-# Optimize shared dependencies across workspace
-pnpm mfe optimize
+# Zero-config initialization
+pnpm mfe init                    # Auto-detect and generate config
+pnpm mfe init --host             # Generate host with all remotes
+
+# Discover all remotes in workspace
+pnpm mfe discover --save         # Scan and save registry
+
+# Optimize shared dependencies
+pnpm mfe optimize --apply        # Analyze and optimize
 
 # Run development servers
 pnpm dev:vite      # Vite MFE
@@ -20,173 +27,108 @@ pnpm dev:rsbuild   # Rsbuild MFE
 pnpm dev:webpack   # Webpack MFE
 ```
 
-## í³š Documentation
+## âœ¨ Features
 
-- **[DEV_GUIDE.md](./DEV_GUIDE.md)** - Complete developer reference
-- **[OPTIMIZATION_GUIDE.md](./OPTIMIZATION_GUIDE.md)** - Dependency optimization guide
+### ðŸŽ¯ Zero-Config Federation (NEW!)
+- Automatic remote discovery across workspace
+- Intelligent config generation (framework, build tool, exposes, shared)
+- Remote registry management
+- One command setup: `mfe init`
+
+### ðŸ”§ Multi-Framework Support
+- React, Angular, Vue, Svelte templates
+- Vite, Webpack, Rsbuild build tools
+- Framework-specific optimizations
+
+### ðŸ“Š Smart Optimization
+- Automatic dependency analysis
+- Version conflict detection
+- Bundle size savings calculator
+- Auto-apply optimizations
+
+## ðŸ“š Documentation
+
+- **[ZERO_CONFIG_GUIDE.md](./ZERO_CONFIG_GUIDE.md)** - Zero-config federation guide
+- **[OPTIMIZATION_GUIDE.md](./OPTIMIZATION_GUIDE.md)** - Dependency optimization
 - **[MULTI_FRAMEWORK_IMPLEMENTATION.md](./MULTI_FRAMEWORK_IMPLEMENTATION.md)** - Multi-framework support
+- **[DEV_GUIDE.md](./DEV_GUIDE.md)** - Complete developer reference
 - **[docs/status.md](./docs/status.md)** - Project status and roadmap
 
-## Project Structure
+---
 
-| Package | Description |
-|---------|-------------|
-| `mfe_cli` | CLI tool for generating new MFEs and optimizing dependencies |
-| `mf_lib` | Shared component library with reusable components |
-| `mf_provider_app` | Host/shell application that loads remotes |
-| `mf_react_rsbuild` | Example MFE using RSBuild |
-| `mf_react_vite` | Example MFE using Vite |
-| `mf_react_webpack` | Example MFE using Webpack 5 |
-| `mf_angular_webpack` | Example MFE using Angular + Webpack |
-| `mf_vue_vite` | Example MFE using Vue + Vite |
-| `mf_svelte_vite` | Example MFE using Svelte + Vite |
+# Instructions for package.json Scripts
 
-## Features
-
-- **Multiple Frameworks**: React, Angular, Vue, and Svelte support
-- **Multiple Build Tools**: Webpack, Vite, and RSBuild
-- **TypeScript Support**: Full TypeScript configuration in all templates
-- **Testing Setup**: Jest configuration included in templates
-- **Shared Library**: Common components available through `mf_lib`
-- **CLI Tool**: Powerful CLI for scaffolding new MFEs
-- **Dependency Optimization**: Smart analysis and optimization of shared dependencies
-- **Host Application**: Example provider app showing remote loading
+This file provides a brief guide on how to use the scripts defined in your `package.json` file.
 
 ## Common Commands
 
-### Install Dependencies
-
-```bash
-pnpm install
-```
-
-### Run Development Servers
-
-- **Rsbuild:**
+- **Install dependencies**
   ```bash
-  pnpm dev:rsbuild
+  pnpm install
   ```
-
-- **Vite:**
+- **Run development servers**
+  - Rsbuild:
+    ```bash
+    pnpm dev:rsbuild
+    ```
+  - Vite:
+    ```bash
+    pnpm dev:vite
+    ```
+  - Webpack:
+    ```bash
+    pnpm dev:webpack
+    ```
+- **Run storybook**
   ```bash
-  pnpm dev:vite
+  pnpm storybook
   ```
+- **Build the project**
+  - Library:
+    ```bash
+    pnpm build:lib
+    ```
+  - Provider:
+    ```bash
+    pnpm build:provider
+    ```
+  - Rsbuild:
+    ```bash
+    pnpm build:rsbuild
+    ```
+  - Vite:
+    ```bash
+    pnpm build:vite
+    ```
+  - Webpack:
+    ```bash
+    pnpm build:webpack
+    ```
+- **Run tests**
+  - Webpack:
+    ```bash
+    pnpm test:webpack
+    ```
+  - Vite:
+    ```bash
+    pnpm test:vite
+    ```
+    <!--
+  - All subdirectories:
+    ```bash
+    pnpm test
+    ```
+    -->
 
-- **Webpack:**
-  ```bash
-  pnpm dev:webpack
-  ```
+## Lint and Typecheck (Vite)
 
-### Build the Project
-
-- **Library:**
-  ```bash
-  pnpm build:lib
-  ```
-
-- **Provider:**
-  ```bash
-  pnpm build:provider
-  ```
-
-- **Rsbuild:**
-  ```bash
-  pnpm build:rsbuild
-  ```
-
-- **Vite:**
-  ```bash
-  pnpm build:vite
-  ```
-
-- **Webpack:**
-  ```bash
-  pnpm build:webpack
-  ```
-
-### Run Tests
-
-- **Webpack:**
-  ```bash
-  pnpm test:webpack
-  ```
-
-- **Vite:**
-  ```bash
-  pnpm test:vite
-  ```
-
-### Run Storybook
-
-```bash
-pnpm storybook
-```
-
-### Lint and Type Check
-
-- **Lint Vite app:**
+- **Lint Vite app**
   ```bash
   pnpm lint:vite
   ```
-
-- **Type check Vite app:**
+- **Typecheck Vite app**
   ```bash
   pnpm typecheck:vite
   ```
 
-## Generate New MFE
-
-### Using Multi-Framework Mode
-
-```bash
-pnpm mfe generate my-app \
-  --framework react \
-  --build-tool vite \
-  --mf-name myRemote \
-  --port 3200
-```
-
-Supported combinations:
-- `react` + `vite | webpack | rsbuild`
-- `angular` + `webpack`
-- `vue` + `vite | webpack`
-- `svelte` + `vite`
-
-### Using Legacy Template Mode
-
-```bash
-pnpm mfe generate my-app \
-  --template react-vite \
-  --mf-name myRemote \
-  --port 3200
-```
-
-## Optimize Dependencies
-
-Analyze and optimize shared dependencies across the workspace:
-
-```bash
-# Analyze and show recommendations
-pnpm mfe optimize
-
-# Analyze and auto-apply optimizations
-pnpm mfe optimize --apply
-
-# Preview what would be changed
-pnpm mfe optimize --dry-run
-```
-
-See [OPTIMIZATION_GUIDE.md](./OPTIMIZATION_GUIDE.md) for detailed usage.
-
-## Contributing
-
-1. Fork the repository
-2. Create your feature branch (`git checkout -b feature/AmazingFeature`)
-3. Run tests (`pnpm test`)
-4. Commit your changes (`git commit -m 'Add some AmazingFeature'`)
-5. Push to the branch (`git push origin feature/AmazingFeature`)
-6. Open a Pull Request
-
-## License
-
-This project is licensed under the MIT License - see the LICENSE file for details.
+Refer to your `package.json` for the full list of
