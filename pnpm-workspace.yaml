@@ -4,6 +4,9 @@ packages:
   - mf_react_rsbuild
   - mf_react_vite
   - mf_react_webpack
+  - mf_angular_webpack
+  - mf_vue_vite
+  - mf_svelte_vite
   - mfe_cli
 onlyBuiltDependencies:
   - "@parcel/watcher"

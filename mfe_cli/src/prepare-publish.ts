@@ -8,10 +8,20 @@ const __filename = fileURLToPath(import.meta.url);
 const __dirname = dirname(__filename);
 
 const TEMPLATES = {
+  // React templates
   'react-vite': '../../mf_react_vite',
   'react-webpack': '../../mf_react_webpack',
   'react-rsbuild': '../../mf_react_rsbuild',
-  provider: '../../mf_provider_app',
+  'provider': '../../mf_provider_app',
+  
+  // Angular templates
+  'angular-webpack': '../../mf_angular_webpack',
+  
+  // Vue templates
+  'vue-vite': '../../mf_vue_vite',
+  
+  // Svelte templates
+  'svelte-vite': '../../mf_svelte_vite',
 };
 
 const EXCLUDE = [
